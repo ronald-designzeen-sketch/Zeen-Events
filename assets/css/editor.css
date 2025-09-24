@@ -1,0 +1,80 @@
+.dz-events-placeholder {
+  padding: 30px;
+  border: 2px dashed #0073aa;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.dz-events-placeholder::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0,115,170,0.1) 0%, transparent 70%);
+  animation: dz-float 6s ease-in-out infinite;
+}
+
+@keyframes dz-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(180deg); }
+}
+
+.dz-events-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.dz-events-preview-header .dashicons {
+  font-size: 24px;
+  color: #0073aa;
+  margin-right: 10px;
+}
+
+.dz-events-preview-header h3 {
+  margin: 0;
+  color: #0073aa;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.dz-events-preview-content {
+  background: rgba(255,255,255,0.9);
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+}
+
+.dz-events-preview-content p {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.dz-events-preview-content ul {
+  margin: 0;
+  padding-left: 20px;
+  text-align: left;
+}
+
+.dz-events-preview-content li {
+  margin-bottom: 8px;
+  color: #555;
+  font-size: 14px;
+}
+
+.dz-events-preview-content strong {
+  color: #0073aa;
+  font-weight: 600;
+}

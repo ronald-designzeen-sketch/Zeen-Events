@@ -1,0 +1,2832 @@
+/* Main Events Container - Full Width */
+.dz-events-wrapper {
+  margin: 20px 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Events Container for all layouts - Full Width */
+.dz-events-container {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Archive wrapper - Full Width */
+.dz-events-archive-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dz-events-archive-wrapper .container {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Elementor full width support */
+.elementor-section.elementor-section-boxed .dz-events-wrapper,
+.elementor-section.elementor-section-boxed .dz-events-container {
+  padding: 0 15px;
+}
+
+.elementor-section.elementor-section-full_width .dz-events-wrapper,
+.elementor-section.elementor-section-full_width .dz-events-container {
+  padding: 0;
+}
+
+/* Full width support for all containers */
+.dz-events-wrapper,
+.dz-events-container,
+.dz-events-custom,
+.dz-events-archive-wrapper {
+  max-width: none !important;
+}
+
+/* Elementor container full width override */
+.elementor-container {
+  max-width: none !important;
+}
+
+.elementor-section.elementor-section-full_width .elementor-container {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Responsive padding adjustments for boxed sections only */
+@media (min-width: 768px) {
+  .elementor-section.elementor-section-boxed .dz-events-wrapper,
+  .elementor-section.elementor-section-boxed .dz-events-container,
+  .elementor-section.elementor-section-boxed .dz-events-archive-wrapper .container {
+    padding: 0 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .elementor-section.elementor-section-boxed .dz-events-wrapper,
+  .elementor-section.elementor-section-boxed .dz-events-container,
+  .elementor-section.elementor-section-boxed .dz-events-archive-wrapper .container {
+    padding: 0 30px;
+  }
+}
+
+/* Grid Layout */
+.dz-events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Event Card */
+.dz-event-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.dz-event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* Event Thumbnail */
+.dz-event-thumb {
+  position: relative;
+  overflow: hidden;
+}
+
+.dz-event-thumb img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.dz-event-card:hover .dz-event-thumb img {
+  transform: scale(1.05);
+}
+
+/* Event Badges */
+.dz-event-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+.dz-event-badge.dz-event-featured {
+  background: #ff6b35;
+  color: white;
+  top: 10px;
+  right: 10px;
+}
+
+.dz-event-badge.dz-event-status-upcoming {
+  background: #28a745;
+  color: white;
+  top: 40px;
+  right: 10px;
+}
+
+.dz-event-badge.dz-event-status-ongoing {
+  background: #007cba;
+  color: white;
+  top: 40px;
+  right: 10px;
+}
+
+.dz-event-badge.dz-event-status-past {
+  background: #6c757d;
+  color: white;
+  top: 40px;
+  right: 10px;
+}
+
+.dz-event-badge.dz-event-status-completed {
+  background: #6c757d;
+  color: white;
+  top: 40px;
+  right: 10px;
+}
+
+.dz-event-badge.dz-event-status-cancelled {
+  background: #dc3545;
+  color: white;
+  top: 40px;
+  right: 10px;
+}
+
+/* Event Content */
+.dz-event-content {
+  padding: 20px;
+}
+
+.dz-event-title {
+  margin: 0 0 15px 0;
+  font-size: 1.4em;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #2c3e50;
+}
+
+.dz-event-meta {
+  margin-bottom: 15px;
+}
+
+.dz-event-meta p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+.dz-meta-label {
+  font-weight: 600;
+  color: #555;
+  margin-right: 8px;
+  min-width: 80px;
+}
+
+.dz-price-value {
+  font-weight: 700;
+  color: #28a745;
+  font-size: 16px;
+}
+
+.dz-event-excerpt {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Event Actions */
+.dz-event-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dz-event-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  text-align: center;
+  flex: 1;
+  min-width: 120px;
+}
+
+.dz-btn-primary {
+  background: #0073aa;
+  color: #fff;
+  border: 2px solid #0073aa;
+}
+
+.dz-btn-primary:hover {
+  background: #005f8d;
+  border-color: #005f8d;
+  color: #fff;
+}
+
+.dz-btn-secondary {
+  background: transparent;
+  color: #0073aa;
+  border: 2px solid #0073aa;
+}
+
+.dz-btn-secondary:hover {
+  background: #0073aa;
+  color: #fff;
+}
+
+/* List Layout */
+.dz-events-wrapper.dz-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dz-events-wrapper.dz-events-list .dz-event-card {
+  display: flex;
+  align-items: stretch;
+  text-align: left;
+  min-height: 200px;
+}
+
+.dz-events-wrapper.dz-events-list .dz-event-thumb {
+  flex: 0 0 300px;
+  margin-right: 0;
+}
+
+.dz-events-wrapper.dz-events-list .dz-event-thumb img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.dz-events-wrapper.dz-events-list .dz-event-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dz-events-wrapper.dz-events-list .dz-event-actions {
+  margin-top: auto;
+  padding: 20px 0 0 0;
+}
+
+/* Carousel Layout */
+.dz-events-wrapper.dz-events-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  scroll-snap-type: x mandatory;
+  padding: 10px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #0073aa #f1f1f1;
+}
+
+.dz-events-wrapper.dz-events-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.dz-events-wrapper.dz-events-carousel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.dz-events-wrapper.dz-events-carousel::-webkit-scrollbar-thumb {
+  background: #0073aa;
+  border-radius: 4px;
+}
+
+.dz-events-wrapper.dz-events-carousel::-webkit-scrollbar-thumb:hover {
+  background: #005f8d;
+}
+
+.dz-events-wrapper.dz-events-carousel .dz-event-card {
+  min-width: 320px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dz-events-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .dz-events-wrapper.dz-events-list .dz-event-card {
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .dz-events-wrapper.dz-events-list .dz-event-thumb {
+    flex: none;
+  }
+  
+  .dz-events-wrapper.dz-events-list .dz-event-thumb img {
+    height: 200px;
+  }
+  
+  .dz-events-wrapper.dz-events-carousel .dz-event-card {
+    min-width: 280px;
+  }
+  
+  .dz-event-actions {
+    flex-direction: column;
+  }
+  
+  .dz-event-btn {
+    flex: none;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-events-wrapper.dz-events-carousel .dz-event-card {
+    min-width: 250px;
+  }
+  
+  .dz-event-content {
+    padding: 15px;
+  }
+  
+  .dz-event-title {
+    font-size: 1.2em;
+  }
+  
+  .dz-event-meta p {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .dz-meta-label {
+    min-width: auto;
+    margin-right: 0;
+    margin-bottom: 2px;
+  }
+}
+
+/* Loading States */
+.dz-events-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: #666;
+}
+
+.dz-events-loading::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #0073aa;
+  border-radius: 50%;
+  animation: dz-spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes dz-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.dz-events-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+}
+
+.dz-events-empty h3 {
+  margin: 0 0 10px 0;
+  color: #495057;
+}
+
+.dz-events-empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Single Event Page Styles */
+.dz-single-event-wrapper {
+  padding: 40px 0;
+  width: 100%;
+}
+
+.dz-single-event {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Remove max-width when Elementor is used */
+.dz-single-event-wrapper .elementor .dz-single-event {
+  max-width: none;
+  margin: 0;
+}
+
+/* Ensure single event pages respect Elementor full-width */
+.dz-single-event-wrapper .elementor-container {
+  max-width: none !important;
+}
+
+.dz-single-event-wrapper .elementor-section.elementor-section-full_width .elementor-container {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+/* Boxed layout for single events when needed */
+.dz-single-event-wrapper .elementor-section.elementor-section-boxed .elementor-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Full-width overrides for single events */
+.dz-single-event-wrapper .elementor-section.elementor-section-full_width {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+/* Ensure single event content can be full-width */
+.dz-single-event-wrapper .elementor-section .elementor-container {
+  width: 100%;
+}
+
+/* Remove any theme container restrictions on single events */
+.dz-single-event-wrapper .container,
+.dz-single-event-wrapper .wrap,
+.dz-single-event-wrapper .content-area {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Archive wrapper styles */
+.dz-events-archive-wrapper {
+  width: 100%;
+  padding: 40px 0;
+}
+
+/* Global Elementor full-width fixes */
+.elementor-container {
+  max-width: 1200px !important;
+}
+
+.elementor-section.elementor-section-full_width .elementor-container {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+/* Full-width section overrides for all pages */
+.elementor-section.elementor-section-full_width {
+  width: 100vw !important;
+  margin-left: calc(-50vw + 50%) !important;
+  margin-right: calc(-50vw + 50%) !important;
+}
+
+/* Ensure full-width sections break out of any container */
+.elementor-section.elementor-section-full_width {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+}
+
+/* Archive wrapper specific overrides */
+.dz-events-archive-wrapper .elementor-container {
+  max-width: 1200px !important;
+}
+
+.dz-events-archive-wrapper .elementor-section.elementor-section-full_width .elementor-container {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+/* Remove any theme container restrictions on archive pages */
+.dz-events-archive-wrapper .container,
+.dz-events-archive-wrapper .wrap,
+.dz-events-archive-wrapper .content-area {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Additional full-width fixes for theme compatibility */
+.elementor-section.elementor-section-full_width .elementor-background-overlay {
+  width: 100vw !important;
+  left: 50% !important;
+  margin-left: -50vw !important;
+}
+
+.elementor-section.elementor-section-full_width .elementor-background {
+  width: 100vw !important;
+  left: 50% !important;
+  margin-left: -50vw !important;
+}
+
+/* Ensure full-width sections work with any theme */
+body .elementor-section.elementor-section-full_width {
+  overflow-x: visible !important;
+}
+
+/* Fix for themes that add padding to body or html */
+.elementor-section.elementor-section-full_width {
+  box-sizing: border-box;
+}
+
+/* Ensure full-width sections break out of WordPress content area */
+.elementor-section.elementor-section-full_width {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix for themes with fixed containers */
+.elementor-section.elementor-section-full_width .elementor-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Override common theme container restrictions */
+.container .elementor-section.elementor-section-full_width,
+.wrap .elementor-section.elementor-section-full_width,
+.content-area .elementor-section.elementor-section-full_width,
+.site-content .elementor-section.elementor-section-full_width,
+.main-content .elementor-section.elementor-section-full_width {
+  width: 100vw !important;
+  margin-left: calc(-50vw + 50%) !important;
+  margin-right: calc(-50vw + 50%) !important;
+}
+
+/* Ensure full-width works with popular themes */
+.ast-container .elementor-section.elementor-section-full_width,
+.oceanwp-container .elementor-section.elementor-section-full_width,
+.generate-container .elementor-section.elementor-section-full_width,
+.kadence-container .elementor-section.elementor-section-full_width {
+  width: 100vw !important;
+  margin-left: calc(-50vw + 50%) !important;
+  margin-right: calc(-50vw + 50%) !important;
+}
+
+/* Fix for themes with max-width on body or html */
+body .elementor-section.elementor-section-full_width,
+html .elementor-section.elementor-section-full_width {
+  max-width: none !important;
+}
+
+/* Event Details Table Widget Styles */
+.dz-event-details-widget {
+  margin: 20px 0;
+}
+
+.dz-table-title {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.dz-event-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #dee2e6;
+}
+
+.dz-event-details-table td {
+  padding: 12px 16px;
+  border: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.dz-event-details-table tr:first-child td {
+  border-top: none;
+}
+
+.dz-event-details-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dz-event-details-table td:first-child {
+  border-left: none;
+}
+
+.dz-event-details-table td:last-child {
+  border-right: none;
+}
+
+.dz-field-label {
+  font-weight: 600;
+  color: #555;
+  width: 40%;
+  background: #f8f9fa;
+}
+
+.dz-field-value {
+  color: #333;
+  background: #fff;
+}
+
+/* Table Styles */
+.dz-table-striped tr:nth-child(even) .dz-field-label {
+  background: #f1f3f4;
+}
+
+.dz-table-striped tr:nth-child(even) .dz-field-value {
+  background: #fafbfc;
+}
+
+.dz-table-bordered {
+  border: 2px solid #dee2e6 !important;
+}
+
+.dz-table-bordered td {
+  border: 1px solid #dee2e6 !important;
+}
+
+.dz-table-bordered tr:first-child td {
+  border-top: 2px solid #dee2e6 !important;
+}
+
+.dz-table-bordered tr:last-child td {
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+.dz-table-bordered td:first-child {
+  border-left: 2px solid #dee2e6 !important;
+}
+
+.dz-table-bordered td:last-child {
+  border-right: 2px solid #dee2e6 !important;
+}
+
+.dz-table-minimal {
+  box-shadow: none;
+  border: 1px solid #e9ecef;
+}
+
+.dz-table-minimal .dz-field-label {
+  background: transparent;
+  font-weight: 500;
+}
+
+.dz-table-minimal td {
+  border: none !important;
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+.dz-table-minimal tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* Event Actions - Social Share Button Style */
+.dz-event-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: row;
+  padding: 20px 0 0 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.dz-event-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border: 2px solid #0073aa;
+  background: transparent;
+  color: #0073aa;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  width: 150px;
+  height: 44px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  gap: 8px;
+  text-align: center;
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: auto;
+}
+
+.dz-event-action-btn i {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dz-button-text {
+  display: inline-block;
+  line-height: 1;
+}
+
+.dz-chevron-icon {
+  font-size: 12px !important;
+  width: auto !important;
+  height: auto !important;
+  margin-left: 4px;
+  line-height: 1;
+  font-style: normal;
+  font-weight: normal;
+}
+
+/* Bootstrap Icons specific styling */
+.dz-event-action-btn .bi {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dz-save-to-calendar .fa-chevron-down,
+.dz-save-to-calendar .bi-chevron-down {
+  font-size: 12px !important;
+  width: auto !important;
+  height: auto !important;
+  margin-left: 4px;
+}
+
+/* Responsive Button Styles - Social Share Style */
+@media (max-width: 768px) {
+  .dz-event-action-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+    height: 40px;
+    width: 130px;
+  }
+  
+  .dz-event-actions {
+    gap: 10px;
+    justify-content: center;
+    padding: 15px 0 0 0;
+  }
+  
+  .dz-calendar-dropdown .dz-event-action-btn {
+    padding-right: 36px;
+  }
+  
+  .dz-calendar-dropdown .dz-event-action-btn .fa-chevron-down,
+  .dz-calendar-dropdown .dz-event-action-btn .bi-chevron-down,
+  .dz-calendar-dropdown .dz-event-action-btn .dz-chevron-icon {
+    right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-event-action-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    height: 36px;
+    width: 120px;
+  }
+  
+  .dz-event-actions {
+    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0 0 0;
+  }
+  
+  .dz-calendar-dropdown-menu {
+    min-width: 200px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  
+  .dz-calendar-dropdown.active .dz-calendar-dropdown-menu {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Action Button Hover Effects - Social Share Style */
+.dz-event-action-btn:hover {
+  background: #0073aa;
+  color: white;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 115, 170, 0.3);
+}
+
+.dz-event-action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 115, 170, 0.2);
+}
+
+/* Individual Button Colors - Social Share Style */
+.dz-save-to-calendar {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.dz-save-to-calendar:hover {
+  background: #28a745;
+  color: white;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.dz-invite-friends {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+
+.dz-invite-friends:hover {
+  background: #17a2b8;
+  color: white;
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
+.dz-book-event {
+  border-color: #ffc107;
+  color: #ffc107;
+}
+
+.dz-book-event:hover {
+  background: #ffc107;
+  color: #212529;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.dz-back-button {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.dz-back-button:hover {
+  background: #6c757d;
+  color: white;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+/* Button Styles */
+.dz-btn-outline {
+  border: 2px solid #0073aa;
+  background: transparent;
+  color: #0073aa;
+}
+
+.dz-btn-outline:hover {
+  background: #0073aa;
+  color: white;
+}
+
+.dz-btn-filled {
+  border: 2px solid #0073aa;
+  background: #0073aa;
+  color: white;
+}
+
+.dz-btn-filled:hover {
+  background: #005a87;
+  border-color: #005a87;
+}
+
+.dz-btn-minimal {
+  border: 1px solid #dee2e6;
+  background: transparent;
+  color: #6c757d;
+}
+
+.dz-btn-minimal:hover {
+  background: #f8f9fa;
+  color: #495057;
+  border-color: #adb5bd;
+}
+
+/* Specific Button Styles */
+.dz-save-to-calendar {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.dz-save-to-calendar:hover {
+  background: #28a745;
+  color: white;
+}
+
+.dz-invite-friends {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+
+.dz-invite-friends:hover {
+  background: #17a2b8;
+  color: white;
+}
+
+.dz-book-event {
+  border-color: #dc3545;
+  color: #dc3545;
+  font-weight: 700;
+}
+
+.dz-book-event:hover {
+  background: #dc3545;
+  color: white;
+}
+
+.dz-back-button {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.dz-back-button:hover {
+  background: #6c757d;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dz-event-actions {
+    flex-direction: column;
+    padding: 15px 0 0 0;
+  }
+  
+  .dz-event-action-btn {
+    justify-content: center;
+  }
+  
+  .dz-event-details-table {
+    font-size: 14px;
+  }
+  
+  .dz-field-label,
+  .dz-field-value {
+    padding: 10px 12px;
+  }
+}
+
+/* Modal Styles - Enhanced */
+.dz-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+  animation: dz-modal-fade-in 0.3s ease-out;
+}
+
+@keyframes dz-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dz-modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: dz-modal-slide-in 0.3s ease-out;
+}
+
+@keyframes dz-modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dz-modal-large {
+  max-width: 600px;
+}
+
+.dz-modal-invite {
+  max-width: 700px;
+  border-radius: 20px;
+}
+
+.dz-modal-header {
+  padding: 25px 30px 20px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px 20px 0 0;
+}
+
+.dz-modal-header-content h3 {
+  margin: 0 0 8px 0;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dz-modal-header-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+.dz-modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.dz-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.dz-modal-body {
+  padding: 30px;
+}
+
+/* Event Preview Card */
+.dz-event-preview-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  overflow: hidden;
+}
+
+.dz-event-preview-header {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 15px 20px;
+}
+
+.dz-event-preview-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dz-event-preview-content {
+  padding: 20px;
+}
+
+.dz-event-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px 0;
+}
+
+.dz-event-preview-item:last-child {
+  margin-bottom: 0;
+}
+
+.dz-event-preview-item i {
+  color: #6c757d;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.dz-event-preview-label {
+  font-weight: 600;
+  color: #495057;
+  min-width: 80px;
+}
+
+.dz-event-preview-value {
+  color: #212529;
+  flex: 1;
+}
+
+.dz-event-preview-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px;
+}
+
+.dz-event-preview-loading i {
+  animation: dz-spin 1s linear infinite;
+}
+
+@keyframes dz-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Invite Form Section */
+.dz-invite-form-section {
+  margin-top: 25px;
+}
+
+.dz-invite-form-section h4 {
+  color: #495057;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.dz-invite-form {
+  margin-top: 20px;
+}
+
+.dz-form-row {
+  margin-bottom: 20px;
+}
+
+.dz-form-group {
+  margin-bottom: 0;
+}
+
+.dz-form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.dz-form-group label i {
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.dz-form-group input,
+.dz-form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.dz-form-group input:focus,
+.dz-form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.dz-form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.dz-form-group small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: #6c757d;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.dz-form-group small i {
+  color: #17a2b8;
+}
+
+.dz-form-error {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+  display: none;
+  font-weight: 500;
+}
+
+.dz-form-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.dz-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.dz-btn-primary {
+  background: #0073aa;
+  color: white;
+}
+
+.dz-btn-primary:hover {
+  background: #005a87;
+}
+
+.dz-btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.dz-btn-secondary:hover {
+  background: #545b62;
+}
+
+/* Event Preview in Modal */
+.dz-event-preview {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.dz-event-preview h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.dz-event-preview p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.dz-event-preview strong {
+  color: #333;
+}
+
+/* Form Help Text */
+.dz-form-group small {
+  display: block;
+  margin-top: 5px;
+  color: #6c757d;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Calendar Dropdown Styles */
+.dz-calendar-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dz-calendar-dropdown .dz-event-action-btn {
+  position: relative;
+  padding-right: 40px;
+  justify-content: space-between;
+}
+
+.dz-calendar-dropdown .dz-event-action-btn .fa-chevron-down,
+.dz-calendar-dropdown .dz-event-action-btn .bi-chevron-down,
+.dz-calendar-dropdown .dz-event-action-btn .dz-chevron-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px !important;
+  width: auto !important;
+  height: auto !important;
+  margin-left: 0;
+  transition: transform 0.3s ease;
+}
+
+.dz-calendar-dropdown.active .dz-event-action-btn .fa-chevron-down,
+.dz-calendar-dropdown.active .dz-event-action-btn .bi-chevron-down,
+.dz-calendar-dropdown.active .dz-event-action-btn .dz-chevron-icon {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.dz-calendar-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 220px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dz-calendar-dropdown.active .dz-calendar-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dz-calendar-option {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  color: #374151;
+  text-decoration: none;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.dz-calendar-option:last-child {
+  border-bottom: none;
+}
+
+.dz-calendar-option:hover {
+  background: #f8fafc;
+  color: #0073aa;
+  text-decoration: none;
+  transform: translateX(4px);
+}
+
+.dz-calendar-option svg {
+  width: 18px;
+  height: 18px;
+  margin-right: 12px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.dz-calendar-option .option-text {
+  flex: 1;
+}
+
+/* Calendar Icons - Now using inline SVG in HTML */
+
+/* Custom Shortcode Calendar Button Styling */
+.dz-event-actions .dz-calendar-shortcode {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+
+.dz-event-actions .dz-calendar-shortcode * {
+  margin: 0;
+  padding: 0;
+}
+
+.dz-event-actions .dz-calendar-shortcode button,
+.dz-event-actions .dz-calendar-shortcode a,
+.dz-event-actions .dz-calendar-shortcode input[type="button"],
+.dz-event-actions .dz-calendar-shortcode input[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 2px solid #0073aa;
+  background: transparent;
+  color: #0073aa;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 48px;
+  width: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.dz-event-actions .dz-calendar-shortcode button:hover,
+.dz-event-actions .dz-calendar-shortcode a:hover,
+.dz-event-actions .dz-calendar-shortcode input[type="button"]:hover,
+.dz-event-actions .dz-calendar-shortcode input[type="submit"]:hover {
+  background: #0073aa;
+  color: white;
+  text-decoration: none;
+}
+
+
+.dz-event-header {
+  margin-bottom: 40px;
+}
+
+.dz-event-featured-image {
+  position: relative;
+  margin-bottom: 30px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.dz-event-featured-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.dz-event-title-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.dz-event-title {
+  font-size: 2.5em;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  line-height: 1.2;
+}
+
+.dz-event-categories {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dz-event-category {
+  background: #0073aa;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dz-event-content-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.dz-event-details {
+  background: #f8f9fa;
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+}
+
+.dz-event-details h2 {
+  margin: 0 0 25px 0;
+  color: #2c3e50;
+  font-size: 1.5em;
+}
+
+.dz-event-meta-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.dz-event-meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.dz-event-meta-item i {
+  color: #0073aa;
+  font-size: 18px;
+  margin-top: 2px;
+  min-width: 20px;
+}
+
+.dz-meta-content {
+  flex: 1;
+}
+
+.dz-meta-content strong {
+  display: block;
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.dz-meta-content span {
+  color: #666;
+  font-size: 14px;
+}
+
+.dz-price {
+  font-weight: 700;
+  color: #28a745 !important;
+  font-size: 16px !important;
+}
+
+.dz-event-description {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.dz-event-description h2 {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+  font-size: 1.5em;
+}
+
+.dz-event-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Social Share Styles */
+.dz-social-share {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.dz-share-text {
+  margin: 0 0 20px 0;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.dz-social-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dz-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.dz-social-btn i {
+  font-size: 16px;
+  width: 16px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Bootstrap Icons specific styling for social buttons */
+.dz-social-btn .bi {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dz-social-btn-small {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.dz-social-btn-small i {
+  font-size: 14px;
+}
+
+.dz-social-btn-small .bi {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.dz-social-btn-large {
+  padding: 16px 20px;
+  font-size: 16px;
+}
+
+.dz-social-btn-large i {
+  font-size: 18px;
+}
+
+.dz-social-btn-large .bi {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.dz-social-btn-square {
+  border-radius: 4px;
+}
+
+.dz-social-btn-rounded {
+  border-radius: 8px;
+}
+
+.dz-social-btn-circle {
+  border-radius: 50px;
+  padding: 12px;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.dz-social-btn-circle .dz-social-label {
+  display: none;
+}
+
+.dz-social-btn-circle i {
+  font-size: 18px;
+  margin: 0;
+}
+
+.dz-social-btn-circle .bi {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.dz-social-facebook {
+  background: #1877f2;
+  color: white;
+}
+
+.dz-social-facebook:hover {
+  background: #166fe5;
+  color: white;
+}
+
+.dz-social-twitter {
+  background: #1da1f2;
+  color: white;
+}
+
+.dz-social-twitter:hover {
+  background: #1a91da;
+  color: white;
+}
+
+.dz-social-linkedin {
+  background: #0077b5;
+  color: white;
+}
+
+.dz-social-linkedin:hover {
+  background: #006ba1;
+  color: white;
+}
+
+.dz-social-whatsapp {
+  background: #25d366;
+  color: white;
+}
+
+.dz-social-whatsapp:hover {
+  background: #22c55e;
+  color: white;
+}
+
+.dz-social-email {
+  background: #6c757d;
+  color: white;
+}
+
+.dz-social-email:hover {
+  background: #5a6268;
+  color: white;
+}
+
+.dz-social-telegram {
+  background: #0088cc;
+  color: white;
+}
+
+.dz-social-telegram:hover {
+  background: #0077b3;
+  color: white;
+}
+
+.dz-social-reddit {
+  background: #ff4500;
+  color: white;
+}
+
+.dz-social-reddit:hover {
+  background: #e63e00;
+  color: white;
+}
+
+.dz-social-pinterest {
+  background: #bd081c;
+  color: white;
+}
+
+.dz-social-pinterest:hover {
+  background: #a0071a;
+  color: white;
+}
+
+/* Event Actions Styles */
+.dz-event-actions {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.dz-event-actions .dz-event-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-align: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  width: 100%;
+  border: 2px solid transparent;
+}
+
+.dz-event-actions .dz-event-btn:last-child {
+  margin-bottom: 0;
+}
+
+.dz-btn-calendar {
+  background: #0073aa;
+  color: white;
+  border-color: #0073aa;
+}
+
+.dz-btn-calendar:hover {
+  background: #005f8d;
+  border-color: #005f8d;
+  color: white;
+}
+
+.dz-btn-register {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.dz-btn-register:hover {
+  background: #218838;
+  border-color: #218838;
+  color: white;
+}
+
+.dz-btn-back {
+  background: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
+
+.dz-btn-back:hover {
+  background: #5a6268;
+  border-color: #5a6268;
+  color: white;
+}
+
+/* Responsive Design for Single Event */
+@media (max-width: 768px) {
+  .dz-event-content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .dz-event-title {
+    font-size: 2em;
+  }
+  
+  .dz-event-featured-image img {
+    height: 250px;
+  }
+  
+  .dz-event-details,
+  .dz-event-description,
+  .dz-social-share,
+  .dz-event-actions {
+    padding: 20px;
+  }
+  
+  .dz-social-buttons {
+    justify-content: center;
+  }
+  
+  .dz-event-actions .dz-event-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-single-event-wrapper {
+    padding: 20px 0;
+  }
+  
+  .dz-event-title {
+    font-size: 1.8em;
+  }
+  
+  .dz-event-meta-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .dz-social-btn {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .dz-social-btn-circle {
+    min-width: 44px;
+  }
+}
+
+/* Archive Page Styles */
+.dz-events-archive-wrapper {
+  padding: 40px 0;
+}
+
+.dz-events-archive-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 40px 0;
+  background: linear-gradient(135deg, #0073aa 0%, #005f8d 100%);
+  color: white;
+  border-radius: 16px;
+}
+
+.dz-events-archive-title {
+  font-size: 3em;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.dz-events-archive-description {
+  font-size: 1.2em;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.dz-events-filters {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-bottom: 40px;
+}
+
+.dz-events-filter-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  align-items: end;
+}
+
+.dz-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dz-filter-group label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.dz-filter-group select,
+.dz-filter-group input[type="checkbox"] {
+  padding: 12px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  background: white;
+}
+
+.dz-filter-group select:focus {
+  outline: none;
+  border-color: #0073aa;
+  box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1);
+}
+
+.dz-filter-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: #0073aa;
+}
+
+.dz-filter-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.dz-filter-btn,
+.dz-clear-btn {
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.dz-filter-btn {
+  background: #0073aa;
+  color: white;
+  border-color: #0073aa;
+}
+
+.dz-filter-btn:hover {
+  background: #005f8d;
+  border-color: #005f8d;
+  color: white;
+}
+
+.dz-clear-btn {
+  background: transparent;
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.dz-clear-btn:hover {
+  background: #6c757d;
+  color: white;
+}
+
+.dz-events-pagination {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.dz-events-pagination .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  margin: 0 5px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #0073aa;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  height: 44px;
+}
+
+.dz-events-pagination .page-numbers:hover,
+.dz-events-pagination .page-numbers.current {
+  background: #0073aa;
+  color: white;
+  border-color: #0073aa;
+}
+
+.dz-events-pagination .page-numbers.prev,
+.dz-events-pagination .page-numbers.next {
+  padding: 12px 20px;
+}
+
+.dz-no-events {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f8f9fa;
+  border-radius: 16px;
+  border: 2px dashed #dee2e6;
+}
+
+.dz-no-events h3 {
+  color: #6c757d;
+  font-size: 1.5em;
+  margin: 0 0 15px 0;
+}
+
+.dz-no-events p {
+  color: #6c757d;
+  font-size: 16px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Archive Page Responsive */
+@media (max-width: 768px) {
+  .dz-events-archive-title {
+    font-size: 2.5em;
+  }
+  
+  .dz-events-filter-form {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .dz-filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .dz-filter-btn,
+  .dz-clear-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .dz-events-archive-header {
+    padding: 30px 20px;
+  }
+  
+  .dz-events-filters {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-events-archive-title {
+    font-size: 2em;
+  }
+  
+  .dz-events-archive-description {
+    font-size: 1em;
+  }
+  
+  .dz-events-pagination .page-numbers {
+    padding: 10px 14px;
+    margin: 0 2px;
+    min-width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+}
+
+/* Custom Event Cards - Full Width */
+.dz-events-custom {
+  display: grid;
+  gap: 25px;
+  margin: 20px 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Responsive min-width for cards */
+.dz-event-card-custom {
+  min-width: 280px;
+}
+
+/* Custom Fields Styling */
+.dz-custom-field {
+  border-left: 3px solid var(--dz-primary-color, #0073aa);
+  padding-left: 8px;
+  margin-left: 4px;
+}
+
+.dz-custom-field i {
+  opacity: 0.8;
+}
+
+.dz-custom-field:hover i {
+  opacity: 1;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+.dz-custom-field img {
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.dz-custom-field:hover img {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Inline Search Functionality */
+.dz-events-search-container {
+  margin-bottom: 30px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.dz-events-search-form-inline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dz-search-input-group {
+  display: flex;
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.dz-events-search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px 0 0 6px;
+  font-size: 14px;
+  background: #fff;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.dz-events-search-input:focus {
+  border-color: #0073aa;
+  box-shadow: 0 0 0 2px rgba(0,115,170,0.1);
+}
+
+.dz-events-search-input::placeholder {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.dz-events-search-btn {
+  padding: 12px 16px;
+  background: #0073aa;
+  color: white;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+}
+
+.dz-events-search-btn:hover {
+  background: #005f8d;
+}
+
+.dz-events-search-btn i {
+  font-size: 14px;
+}
+
+.dz-filter-group {
+  min-width: 150px;
+}
+
+.dz-events-filter-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.dz-events-filter-select:focus {
+  border-color: #0073aa;
+  box-shadow: 0 0 0 2px rgba(0,115,170,0.1);
+}
+
+.dz-date-filters {
+  display: flex;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.dz-events-filter-date {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.dz-events-filter-date:focus {
+  border-color: #0073aa;
+  box-shadow: 0 0 0 2px rgba(0,115,170,0.1);
+}
+
+.dz-events-clear-btn {
+  padding: 12px 16px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+}
+
+.dz-events-clear-btn:hover {
+  background: #5a6268;
+}
+
+.dz-events-clear-btn i {
+  font-size: 14px;
+}
+
+.dz-events-search-results-count {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: #fff;
+  border-radius: 6px;
+  color: #495057;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.dz-events-search-results-count.show {
+  display: block !important;
+}
+
+.dz-events-search-results-count:empty {
+  display: none !important;
+}
+
+/* Responsive Search Container */
+@media (max-width: 1024px) {
+  .dz-events-search-form-inline {
+    gap: 10px;
+  }
+  
+  .dz-search-input-group {
+    min-width: 180px;
+  }
+  
+  .dz-filter-group {
+    min-width: 130px;
+  }
+  
+  .dz-date-filters {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dz-events-search-container {
+    margin-bottom: 25px;
+    padding: 12px;
+  }
+  
+  .dz-events-search-form-inline {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .dz-search-input-group {
+    min-width: auto;
+  }
+  
+  .dz-events-search-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .dz-filter-group {
+    min-width: auto;
+  }
+  
+  .dz-date-filters {
+    min-width: auto;
+    gap: 6px;
+  }
+  
+  .dz-events-search-results-count {
+    margin-top: 12px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-events-search-container {
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+  
+  .dz-events-search-form-inline {
+    gap: 8px;
+  }
+  
+  .dz-events-search-input,
+  .dz-events-filter-select,
+  .dz-events-filter-date {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .dz-events-search-btn,
+  .dz-events-clear-btn {
+    padding: 10px 12px;
+  }
+  
+  .dz-date-filters {
+    gap: 4px;
+  }
+  
+  .dz-events-search-results-count {
+    margin-top: 10px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Search Results Animation */
+.dz-event-card-custom {
+  transition: all 0.3s ease;
+}
+
+.dz-event-card-custom.search-hidden {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.dz-event-card-custom.search-visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.dz-events-custom.dz-events-1col {
+  grid-template-columns: 1fr;
+}
+
+.dz-events-custom.dz-events-2col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.dz-events-custom.dz-events-3col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.dz-events-custom.dz-events-4col {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.dz-event-card-custom {
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.dz-event-card-custom.dz-hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+.dz-event-card-custom.dz-hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.dz-event-card-custom.dz-hover-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 115, 170, 0.3) !important;
+}
+
+.dz-event-thumb-custom {
+  position: relative;
+  overflow: hidden;
+}
+
+.dz-event-thumb-custom img {
+  transition: transform 0.3s ease;
+}
+
+.dz-event-card-custom:hover .dz-event-thumb-custom img {
+  transform: scale(1.05);
+}
+
+.dz-event-badge {
+  position: absolute;
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 12px;
+  padding: 4px 8px;
+}
+
+/* Category Tag Styling */
+.dz-event-category-tag {
+  background: rgba(0,0,0,0.7) !important;
+  color: white !important;
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.dz-event-category-tag:hover {
+  background: rgba(0,0,0,0.8) !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Responsive Category Tag */
+@media (max-width: 768px) {
+  .dz-event-category-tag {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+    border-radius: 15px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-event-category-tag {
+    font-size: 9px !important;
+    padding: 3px 6px !important;
+    border-radius: 12px !important;
+  }
+}
+
+.dz-event-badge.dz-event-featured {
+  background: #ff6b35;
+  color: white;
+  top: 10px;
+  left: 10px;
+}
+
+.dz-event-badge.dz-event-status-upcoming {
+  background: #28a745;
+  color: white;
+}
+
+.dz-event-badge.dz-event-status-ongoing {
+  background: #007cba;
+  color: white;
+}
+
+.dz-event-badge.dz-event-status-past {
+  background: #6c757d;
+  color: white;
+}
+
+.dz-event-badge.dz-event-status-completed {
+  background: #6c757d;
+  color: white;
+}
+
+.dz-event-badge.dz-event-status-cancelled {
+  background: #dc3545;
+  color: white;
+}
+
+.dz-event-title-custom a:hover {
+  opacity: 0.8;
+}
+
+.dz-meta-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.dz-meta-item i {
+  margin-right: 8px;
+  width: 16px;
+  text-align: center;
+}
+
+.dz-event-actions-custom a:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Responsive Design for Custom Cards */
+@media (max-width: 1200px) {
+  .dz-events-custom.dz-events-4col {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .dz-event-card-custom {
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 992px) {
+  .dz-events-custom.dz-events-4col,
+  .dz-events-custom.dz-events-3col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dz-event-card-custom {
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dz-events-custom.dz-events-4col,
+  .dz-events-custom.dz-events-3col,
+  .dz-events-custom.dz-events-2col {
+    grid-template-columns: 1fr;
+  }
+  
+  .dz-event-card-custom {
+    margin-bottom: 20px;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-event-card-custom {
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-event-content-custom {
+    padding: 15px !important;
+  }
+  
+  .dz-event-title-custom {
+    font-size: 16px !important;
+  }
+  
+  .dz-meta-item {
+    font-size: 13px;
+  }
+  
+  .dz-event-actions-custom a {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Message Overlays */
+.dz-message-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+  animation: dz-modal-fade-in 0.3s ease-out;
+}
+
+.dz-message-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 90%;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: dz-modal-slide-in 0.3s ease-out;
+}
+
+.dz-message-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.dz-message-success .dz-message-icon {
+  color: #28a745;
+}
+
+.dz-message-error .dz-message-icon {
+  color: #dc3545;
+}
+
+.dz-message-content h3 {
+  margin: 0 0 15px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+.dz-message-content p {
+  margin: 0 0 25px 0;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+/* Responsive Modal Styles */
+@media (max-width: 768px) {
+  .dz-modal-invite {
+    max-width: 95%;
+    margin: 20px;
+  }
+  
+  .dz-modal-header {
+    padding: 20px 25px 15px;
+  }
+  
+  .dz-modal-header-content h3 {
+    font-size: 20px;
+  }
+  
+  .dz-modal-body {
+    padding: 25px;
+  }
+  
+  .dz-event-preview-content {
+    padding: 15px;
+  }
+  
+  .dz-event-preview-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .dz-event-preview-label {
+    min-width: auto;
+    font-size: 12px;
+  }
+  
+  .dz-form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .dz-form-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dz-modal-invite {
+    max-width: 100%;
+    margin: 10px;
+    border-radius: 16px;
+  }
+  
+  .dz-modal-header {
+    padding: 15px 20px 10px;
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .dz-modal-header-content h3 {
+    font-size: 18px;
+  }
+  
+  .dz-modal-body {
+    padding: 20px;
+  }
+  
+  .dz-event-preview-content {
+    padding: 12px;
+  }
+  
+  .dz-form-group input,
+  .dz-form-group textarea {
+    padding: 10px 12px;
+  }
+}

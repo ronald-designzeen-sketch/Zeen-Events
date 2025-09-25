@@ -181,9 +181,28 @@ add_action('plugins_loaded', 'dz_events_load_textdomain');
 // Enqueue basic styles and scripts
 function dz_events_enqueue_assets() {
     // Only enqueue on event pages
-    if (is_singular('dz_event') || is_post_type_archive('dz_event') || has_shortcode(get_post()->post_content ?? '', 'zeen_events')) {
+    if (is_singular('dz_event') || is_post_type_archive('dz_event')) {
         wp_enqueue_style('dz-events-style', DZ_EVENTS_PLUGIN_URL . 'assets/css/style.css', array(), DZ_EVENTS_VERSION);
         wp_enqueue_script('dz-events-script', DZ_EVENTS_PLUGIN_URL . 'assets/js/script.js', array('jquery'), DZ_EVENTS_VERSION, true);
+        
+        // Localize script for AJAX
+        wp_localize_script('dz-events-script', 'dz_events_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('dz_events_nonce')
+        ));
+    }
+    
+    // Check for shortcode in current post content
+    global $post;
+    if ($post && has_shortcode($post->post_content, 'zeen_events')) {
+        wp_enqueue_style('dz-events-style', DZ_EVENTS_PLUGIN_URL . 'assets/css/style.css', array(), DZ_EVENTS_VERSION);
+        wp_enqueue_script('dz-events-script', DZ_EVENTS_PLUGIN_URL . 'assets/js/script.js', array('jquery'), DZ_EVENTS_VERSION, true);
+        
+        // Localize script for AJAX
+        wp_localize_script('dz-events-script', 'dz_events_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('dz_events_nonce')
+        ));
     }
 }
 add_action('wp_enqueue_scripts', 'dz_events_enqueue_assets');
@@ -310,3 +329,43 @@ function dz_events_admin_column_content($column, $post_id) {
     }
 }
 add_action('manage_dz_event_posts_custom_column', 'dz_events_admin_column_content', 10, 2);
+
+// Basic AJAX handler for future functionality
+function dz_events_ajax_handler() {
+    // Verify nonce for security
+    if (!wp_verify_nonce($_POST['nonce'], 'dz_events_nonce')) {
+        wp_send_json_error('Security check failed');
+    }
+    
+    $action = sanitize_text_field($_POST['action']);
+    
+    switch ($action) {
+        case 'dz_events_get_event_data':
+            $event_id = intval($_POST['event_id']);
+            $event = get_post($event_id);
+            
+            if (!$event || $event->post_type !== 'dz_event') {
+                wp_send_json_error('Event not found');
+            }
+            
+            $event_data = array(
+                'id' => $event_id,
+                'title' => $event->post_title,
+                'content' => $event->post_content,
+                'excerpt' => $event->post_excerpt,
+                'start_date' => get_post_meta($event_id, '_dz_event_start', true),
+                'end_date' => get_post_meta($event_id, '_dz_event_end', true),
+                'location' => get_post_meta($event_id, '_dz_event_location', true),
+                'price' => get_post_meta($event_id, '_dz_event_price', true),
+                'url' => get_permalink($event_id)
+            );
+            
+            wp_send_json_success($event_data);
+            break;
+            
+        default:
+            wp_send_json_error('Invalid action');
+    }
+}
+add_action('wp_ajax_dz_events_get_event_data', 'dz_events_ajax_handler');
+add_action('wp_ajax_nopriv_dz_events_get_event_data', 'dz_events_ajax_handler');

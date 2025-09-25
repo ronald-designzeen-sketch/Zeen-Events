@@ -177,3 +177,136 @@ function dz_events_load_textdomain() {
     );
 }
 add_action('plugins_loaded', 'dz_events_load_textdomain');
+
+// Enqueue basic styles and scripts
+function dz_events_enqueue_assets() {
+    // Only enqueue on event pages
+    if (is_singular('dz_event') || is_post_type_archive('dz_event') || has_shortcode(get_post()->post_content ?? '', 'zeen_events')) {
+        wp_enqueue_style('dz-events-style', DZ_EVENTS_PLUGIN_URL . 'assets/css/style.css', array(), DZ_EVENTS_VERSION);
+        wp_enqueue_script('dz-events-script', DZ_EVENTS_PLUGIN_URL . 'assets/js/script.js', array('jquery'), DZ_EVENTS_VERSION, true);
+    }
+}
+add_action('wp_enqueue_scripts', 'dz_events_enqueue_assets');
+
+// Basic shortcode for displaying events
+function dz_events_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'posts_per_page' => 6,
+        'category' => '',
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'layout' => 'grid'
+    ), $atts);
+
+    $args = array(
+        'post_type' => 'dz_event',
+        'posts_per_page' => intval($atts['posts_per_page']),
+        'orderby' => $atts['orderby'],
+        'order' => $atts['order'],
+        'post_status' => 'publish'
+    );
+
+    if (!empty($atts['category'])) {
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'dz_event_category',
+                'field' => 'slug',
+                'terms' => $atts['category']
+            )
+        );
+    }
+
+    $events = new WP_Query($args);
+    
+    if (!$events->have_posts()) {
+        return '<p>No events found.</p>';
+    }
+
+    $output = '<div class="dz-events-shortcode dz-events-' . esc_attr($atts['layout']) . '">';
+    
+    while ($events->have_posts()) {
+        $events->the_post();
+        $event_id = get_the_ID();
+        
+        $start_date = get_post_meta($event_id, '_dz_event_start', true);
+        $location = get_post_meta($event_id, '_dz_event_location', true);
+        $price = get_post_meta($event_id, '_dz_event_price', true);
+        
+        $output .= '<div class="dz-event-card">';
+        
+        if (has_post_thumbnail()) {
+            $output .= '<div class="dz-event-image">';
+            $output .= '<a href="' . get_permalink() . '">';
+            $output .= get_the_post_thumbnail($event_id, 'medium');
+            $output .= '</a></div>';
+        }
+        
+        $output .= '<div class="dz-event-content">';
+        $output .= '<h3 class="dz-event-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>';
+        
+        $output .= '<div class="dz-event-meta">';
+        if ($start_date) {
+            $output .= '<div class="dz-meta-item">' . date('M j, Y', strtotime($start_date)) . '</div>';
+        }
+        if ($location) {
+            $output .= '<div class="dz-meta-item">' . esc_html($location) . '</div>';
+        }
+        if ($price) {
+            $output .= '<div class="dz-meta-item">' . esc_html($price) . '</div>';
+        }
+        $output .= '</div>';
+        
+        if (has_excerpt()) {
+            $output .= '<div class="dz-event-excerpt">' . get_the_excerpt() . '</div>';
+        }
+        
+        $output .= '<div class="dz-event-actions">';
+        $output .= '<a href="' . get_permalink() . '" class="dz-btn dz-btn-primary">View Details</a>';
+        $output .= '</div>';
+        
+        $output .= '</div></div>';
+    }
+    
+    $output .= '</div>';
+    
+    wp_reset_postdata();
+    
+    return $output;
+}
+add_shortcode('zeen_events', 'dz_events_shortcode');
+
+// Add basic admin columns for events
+function dz_events_admin_columns($columns) {
+    $new_columns = array();
+    $new_columns['cb'] = $columns['cb'];
+    $new_columns['title'] = $columns['title'];
+    $new_columns['event_date'] = __('Event Date', 'designzeen-events');
+    $new_columns['event_location'] = __('Location', 'designzeen-events');
+    $new_columns['event_price'] = __('Price', 'designzeen-events');
+    $new_columns['date'] = $columns['date'];
+    
+    return $new_columns;
+}
+add_filter('manage_dz_event_posts_columns', 'dz_events_admin_columns');
+
+function dz_events_admin_column_content($column, $post_id) {
+    switch ($column) {
+        case 'event_date':
+            $start_date = get_post_meta($post_id, '_dz_event_start', true);
+            if ($start_date) {
+                echo date('M j, Y', strtotime($start_date));
+            } else {
+                echo '—';
+            }
+            break;
+        case 'event_location':
+            $location = get_post_meta($post_id, '_dz_event_location', true);
+            echo $location ? esc_html($location) : '—';
+            break;
+        case 'event_price':
+            $price = get_post_meta($post_id, '_dz_event_price', true);
+            echo $price ? esc_html($price) : '—';
+            break;
+    }
+}
+add_action('manage_dz_event_posts_custom_column', 'dz_events_admin_column_content', 10, 2);

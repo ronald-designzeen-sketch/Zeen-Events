@@ -90,15 +90,30 @@ if ( ! dz_events_check_requirements() ) {
     return;
 }
 
-// Essential includes only - Load core functionality first
-require_once plugin_dir_path(__FILE__) . 'includes/post-types.php';
-require_once plugin_dir_path(__FILE__) . 'includes/meta-boxes.php';
-require_once plugin_dir_path(__FILE__) . 'includes/card-settings.php';
-require_once plugin_dir_path(__FILE__) . 'includes/enqueue.php';
-require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
-require_once plugin_dir_path(__FILE__) . 'includes/single-event.php';
-require_once plugin_dir_path(__FILE__) . 'includes/blocks.php';
-require_once plugin_dir_path(__FILE__) . 'includes/custom-fields.php';
+// Minimal includes only - Load essential functionality first
+require_once plugin_dir_path(__FILE__) . 'includes/post-types-minimal.php';
+require_once plugin_dir_path(__FILE__) . 'includes/enqueue-minimal.php';
+require_once plugin_dir_path(__FILE__) . 'includes/single-event-minimal.php';
+
+// Load additional files only if they exist and are safe
+if (file_exists(plugin_dir_path(__FILE__) . 'includes/meta-boxes.php')) {
+    require_once plugin_dir_path(__FILE__) . 'includes/meta-boxes.php';
+}
+if (file_exists(plugin_dir_path(__FILE__) . 'includes/card-settings.php')) {
+    require_once plugin_dir_path(__FILE__) . 'includes/card-settings.php';
+}
+if (file_exists(plugin_dir_path(__FILE__) . 'includes/admin.php')) {
+    require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
+}
+if (file_exists(plugin_dir_path(__FILE__) . 'includes/single-event.php')) {
+    require_once plugin_dir_path(__FILE__) . 'includes/single-event.php';
+}
+if (file_exists(plugin_dir_path(__FILE__) . 'includes/blocks.php')) {
+    require_once plugin_dir_path(__FILE__) . 'includes/blocks.php';
+}
+if (file_exists(plugin_dir_path(__FILE__) . 'includes/custom-fields.php')) {
+    require_once plugin_dir_path(__FILE__) . 'includes/custom-fields.php';
+}
 
 // Load advanced features only if needed (commented out to prevent errors)
 // require_once plugin_dir_path(__FILE__) . 'includes/class-core.php';

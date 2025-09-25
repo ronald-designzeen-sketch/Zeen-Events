@@ -1873,3 +1873,901 @@ class DZ_Single_Event_Elementor_Widget extends \Elementor\Widget_Base {
 
 // Create Elementor widget files on plugin activation
 register_activation_hook(__FILE__, 'dz_events_create_elementor_widgets');
+
+// Global Admin Settings Page
+class DZ_Events_Admin_Settings {
+    
+    private static $instance = null;
+    
+    public static function get_instance() {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    private function __construct() {
+        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('admin_init', array($this, 'register_settings'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+    }
+    
+    public function add_admin_menu() {
+        add_menu_page(
+            __('Zeen Events Settings', 'designzeen-events'),
+            __('Zeen Events', 'designzeen-events'),
+            'manage_options',
+            'dz-events-settings',
+            array($this, 'admin_page'),
+            'dashicons-calendar-alt',
+            30
+        );
+        
+        add_submenu_page(
+            'dz-events-settings',
+            __('General Settings', 'designzeen-events'),
+            __('General Settings', 'designzeen-events'),
+            'manage_options',
+            'dz-events-settings',
+            array($this, 'admin_page')
+        );
+    }
+    
+    public function register_settings() {
+        register_setting('dz_events_settings', 'dz_events_options');
+        
+        // General Settings Section
+        add_settings_section(
+            'dz_events_general',
+            __('General Settings', 'designzeen-events'),
+            array($this, 'general_section_callback'),
+            'dz-events-settings'
+        );
+        
+        add_settings_field(
+            'events_per_page',
+            __('Events Per Page', 'designzeen-events'),
+            array($this, 'number_field_callback'),
+            'dz-events-settings',
+            'dz_events_general',
+            array('field' => 'events_per_page', 'default' => '10', 'min' => '1', 'max' => '100')
+        );
+        
+        add_settings_field(
+            'default_date_format',
+            __('Default Date Format', 'designzeen-events'),
+            array($this, 'select_field_callback'),
+            'dz-events-settings',
+            'dz_events_general',
+            array('field' => 'default_date_format', 'default' => 'M j, Y', 'options' => array(
+                'M j, Y' => 'Dec 25, 2024',
+                'F j, Y' => 'December 25, 2024',
+                'j M Y' => '25 Dec 2024',
+                'Y-m-d' => '2024-12-25',
+                'm/d/Y' => '12/25/2024',
+                'd/m/Y' => '25/12/2024'
+            ))
+        );
+        
+        add_settings_field(
+            'default_time_format',
+            __('Default Time Format', 'designzeen-events'),
+            array($this, 'select_field_callback'),
+            'dz-events-settings',
+            'dz_events_general',
+            array('field' => 'default_time_format', 'default' => 'g:i A', 'options' => array(
+                'g:i A' => '2:30 PM',
+                'H:i' => '14:30',
+                'g:i a' => '2:30 pm'
+            ))
+        );
+        
+        add_settings_field(
+            'currency_symbol',
+            __('Currency Symbol', 'designzeen-events'),
+            array($this, 'text_field_callback'),
+            'dz-events-settings',
+            'dz_events_general',
+            array('field' => 'currency_symbol', 'default' => '$')
+        );
+        
+        add_settings_field(
+            'currency_position',
+            __('Currency Position', 'designzeen-events'),
+            array($this, 'select_field_callback'),
+            'dz-events-settings',
+            'dz_events_general',
+            array('field' => 'currency_position', 'default' => 'before', 'options' => array(
+                'before' => __('Before amount ($50)', 'designzeen-events'),
+                'after' => __('After amount (50$)', 'designzeen-events')
+            ))
+        );
+        
+        // Display Settings Section
+        add_settings_section(
+            'dz_events_display',
+            __('Display Settings', 'designzeen-events'),
+            array($this, 'display_section_callback'),
+            'dz-events-settings'
+        );
+        
+        add_settings_field(
+            'show_featured_badge',
+            __('Show Featured Badge', 'designzeen-events'),
+            array($this, 'checkbox_field_callback'),
+            'dz-events-settings',
+            'dz_events_display',
+            array('field' => 'show_featured_badge', 'default' => '1')
+        );
+        
+        add_settings_field(
+            'featured_badge_text',
+            __('Featured Badge Text', 'designzeen-events'),
+            array($this, 'text_field_callback'),
+            'dz-events-settings',
+            'dz_events_display',
+            array('field' => 'featured_badge_text', 'default' => 'Featured')
+        );
+        
+        add_settings_field(
+            'default_image_size',
+            __('Default Image Size', 'designzeen-events'),
+            array($this, 'select_field_callback'),
+            'dz-events-settings',
+            'dz_events_display',
+            array('field' => 'default_image_size', 'default' => 'medium', 'options' => array(
+                'thumbnail' => __('Thumbnail (150x150)', 'designzeen-events'),
+                'medium' => __('Medium (300x300)', 'designzeen-events'),
+                'large' => __('Large (1024x1024)', 'designzeen-events'),
+                'full' => __('Full Size', 'designzeen-events')
+            ))
+        );
+        
+        add_settings_field(
+            'enable_ajax_loading',
+            __('Enable AJAX Loading', 'designzeen-events'),
+            array($this, 'checkbox_field_callback'),
+            'dz-events-settings',
+            'dz_events_display',
+            array('field' => 'enable_ajax_loading', 'default' => '1')
+        );
+        
+        // SEO Settings Section
+        add_settings_section(
+            'dz_events_seo',
+            __('SEO Settings', 'designzeen-events'),
+            array($this, 'seo_section_callback'),
+            'dz-events-settings'
+        );
+        
+        add_settings_field(
+            'events_page_title',
+            __('Events Page Title', 'designzeen-events'),
+            array($this, 'text_field_callback'),
+            'dz-events-settings',
+            'dz_events_seo',
+            array('field' => 'events_page_title', 'default' => 'Events')
+        );
+        
+        add_settings_field(
+            'events_page_description',
+            __('Events Page Description', 'designzeen-events'),
+            array($this, 'textarea_field_callback'),
+            'dz-events-settings',
+            'dz_events_seo',
+            array('field' => 'events_page_description', 'default' => 'Discover our upcoming events and join us for amazing experiences.')
+        );
+        
+        add_settings_field(
+            'enable_structured_data',
+            __('Enable Structured Data', 'designzeen-events'),
+            array($this, 'checkbox_field_callback'),
+            'dz-events-settings',
+            'dz_events_seo',
+            array('field' => 'enable_structured_data', 'default' => '1')
+        );
+        
+        // Integration Settings Section
+        add_settings_section(
+            'dz_events_integration',
+            __('Integration Settings', 'designzeen-events'),
+            array($this, 'integration_section_callback'),
+            'dz-events-settings'
+        );
+        
+        add_settings_field(
+            'google_maps_api_key',
+            __('Google Maps API Key', 'designzeen-events'),
+            array($this, 'text_field_callback'),
+            'dz-events-settings',
+            'dz_events_integration',
+            array('field' => 'google_maps_api_key', 'default' => '')
+        );
+        
+        add_settings_field(
+            'enable_social_sharing',
+            __('Enable Social Sharing', 'designzeen-events'),
+            array($this, 'checkbox_field_callback'),
+            'dz-events-settings',
+            'dz_events_integration',
+            array('field' => 'enable_social_sharing', 'default' => '1')
+        );
+        
+        add_settings_field(
+            'facebook_app_id',
+            __('Facebook App ID', 'designzeen-events'),
+            array($this, 'text_field_callback'),
+            'dz-events-settings',
+            'dz_events_integration',
+            array('field' => 'facebook_app_id', 'default' => '')
+        );
+    }
+    
+    public function general_section_callback() {
+        echo '<p>' . __('Configure general settings for your events.', 'designzeen-events') . '</p>';
+    }
+    
+    public function display_section_callback() {
+        echo '<p>' . __('Customize how events are displayed on your website.', 'designzeen-events') . '</p>';
+    }
+    
+    public function seo_section_callback() {
+        echo '<p>' . __('Optimize your events for search engines.', 'designzeen-events') . '</p>';
+    }
+    
+    public function integration_section_callback() {
+        echo '<p>' . __('Configure third-party integrations and APIs.', 'designzeen-events') . '</p>';
+    }
+    
+    public function text_field_callback($args) {
+        $options = get_option('dz_events_options');
+        $value = isset($options[$args['field']]) ? $options[$args['field']] : $args['default'];
+        echo '<input type="text" name="dz_events_options[' . $args['field'] . ']" value="' . esc_attr($value) . '" style="width: 300px;" />';
+    }
+    
+    public function textarea_field_callback($args) {
+        $options = get_option('dz_events_options');
+        $value = isset($options[$args['field']]) ? $options[$args['field']] : $args['default'];
+        echo '<textarea name="dz_events_options[' . $args['field'] . ']" rows="3" style="width: 100%; max-width: 500px;">' . esc_textarea($value) . '</textarea>';
+    }
+    
+    public function number_field_callback($args) {
+        $options = get_option('dz_events_options');
+        $value = isset($options[$args['field']]) ? $options[$args['field']] : $args['default'];
+        $min = isset($args['min']) ? $args['min'] : '';
+        $max = isset($args['max']) ? $args['max'] : '';
+        echo '<input type="number" name="dz_events_options[' . $args['field'] . ']" value="' . esc_attr($value) . '" min="' . $min . '" max="' . $max . '" />';
+    }
+    
+    public function select_field_callback($args) {
+        $options = get_option('dz_events_options');
+        $value = isset($options[$args['field']]) ? $options[$args['field']] : $args['default'];
+        echo '<select name="dz_events_options[' . $args['field'] . ']">';
+        foreach ($args['options'] as $key => $label) {
+            echo '<option value="' . $key . '" ' . selected($value, $key, false) . '>' . $label . '</option>';
+        }
+        echo '</select>';
+    }
+    
+    public function checkbox_field_callback($args) {
+        $options = get_option('dz_events_options');
+        $value = isset($options[$args['field']]) ? $options[$args['field']] : $args['default'];
+        echo '<input type="checkbox" name="dz_events_options[' . $args['field'] . ']" value="1" ' . checked($value, 1, false) . ' />';
+    }
+    
+    public function enqueue_admin_scripts($hook) {
+        if ($hook === 'toplevel_page_dz-events-settings') {
+            wp_enqueue_style('dz-events-admin', DZ_EVENTS_PLUGIN_URL . 'assets/css/admin.css', array(), DZ_EVENTS_VERSION);
+            wp_enqueue_script('dz-events-admin', DZ_EVENTS_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), DZ_EVENTS_VERSION, true);
+        }
+    }
+    
+    public function admin_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php _e('Zeen Events Settings', 'designzeen-events'); ?></h1>
+            
+            <div class="dz-events-admin-header">
+                <div class="dz-events-logo">
+                    <h2><?php _e('Zeen Events', 'designzeen-events'); ?></h2>
+                    <p><?php _e('Professional Event Management Plugin', 'designzeen-events'); ?></p>
+                </div>
+                <div class="dz-events-version">
+                    <span class="version-badge">v<?php echo DZ_EVENTS_VERSION; ?></span>
+                </div>
+            </div>
+            
+            <div class="dz-events-admin-tabs">
+                <nav class="nav-tab-wrapper">
+                    <a href="#general" class="nav-tab nav-tab-active"><?php _e('General', 'designzeen-events'); ?></a>
+                    <a href="#display" class="nav-tab"><?php _e('Display', 'designzeen-events'); ?></a>
+                    <a href="#seo" class="nav-tab"><?php _e('SEO', 'designzeen-events'); ?></a>
+                    <a href="#integration" class="nav-tab"><?php _e('Integration', 'designzeen-events'); ?></a>
+                    <a href="#help" class="nav-tab"><?php _e('Help', 'designzeen-events'); ?></a>
+                </nav>
+            </div>
+            
+            <form method="post" action="options.php">
+                <?php
+                settings_fields('dz_events_settings');
+                do_settings_sections('dz-events-settings');
+                ?>
+                
+                <div class="dz-events-settings-content">
+                    <div id="general" class="tab-content active">
+                        <div class="card">
+                            <h2><?php _e('General Settings', 'designzeen-events'); ?></h2>
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row"><?php _e('Events Per Page', 'designzeen-events'); ?></th>
+                                    <td><?php $this->number_field_callback(array('field' => 'events_per_page', 'default' => '10', 'min' => '1', 'max' => '100')); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Default Date Format', 'designzeen-events'); ?></th>
+                                    <td><?php $this->select_field_callback(array('field' => 'default_date_format', 'default' => 'M j, Y', 'options' => array(
+                                        'M j, Y' => 'Dec 25, 2024',
+                                        'F j, Y' => 'December 25, 2024',
+                                        'j M Y' => '25 Dec 2024',
+                                        'Y-m-d' => '2024-12-25',
+                                        'm/d/Y' => '12/25/2024',
+                                        'd/m/Y' => '25/12/2024'
+                                    ))); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Default Time Format', 'designzeen-events'); ?></th>
+                                    <td><?php $this->select_field_callback(array('field' => 'default_time_format', 'default' => 'g:i A', 'options' => array(
+                                        'g:i A' => '2:30 PM',
+                                        'H:i' => '14:30',
+                                        'g:i a' => '2:30 pm'
+                                    ))); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Currency Symbol', 'designzeen-events'); ?></th>
+                                    <td><?php $this->text_field_callback(array('field' => 'currency_symbol', 'default' => '$')); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Currency Position', 'designzeen-events'); ?></th>
+                                    <td><?php $this->select_field_callback(array('field' => 'currency_position', 'default' => 'before', 'options' => array(
+                                        'before' => __('Before amount ($50)', 'designzeen-events'),
+                                        'after' => __('After amount (50$)', 'designzeen-events')
+                                    ))); ?></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div id="display" class="tab-content">
+                        <div class="card">
+                            <h2><?php _e('Display Settings', 'designzeen-events'); ?></h2>
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row"><?php _e('Show Featured Badge', 'designzeen-events'); ?></th>
+                                    <td><?php $this->checkbox_field_callback(array('field' => 'show_featured_badge', 'default' => '1')); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Featured Badge Text', 'designzeen-events'); ?></th>
+                                    <td><?php $this->text_field_callback(array('field' => 'featured_badge_text', 'default' => 'Featured')); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Default Image Size', 'designzeen-events'); ?></th>
+                                    <td><?php $this->select_field_callback(array('field' => 'default_image_size', 'default' => 'medium', 'options' => array(
+                                        'thumbnail' => __('Thumbnail (150x150)', 'designzeen-events'),
+                                        'medium' => __('Medium (300x300)', 'designzeen-events'),
+                                        'large' => __('Large (1024x1024)', 'designzeen-events'),
+                                        'full' => __('Full Size', 'designzeen-events')
+                                    ))); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Enable AJAX Loading', 'designzeen-events'); ?></th>
+                                    <td><?php $this->checkbox_field_callback(array('field' => 'enable_ajax_loading', 'default' => '1')); ?></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div id="seo" class="tab-content">
+                        <div class="card">
+                            <h2><?php _e('SEO Settings', 'designzeen-events'); ?></h2>
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row"><?php _e('Events Page Title', 'designzeen-events'); ?></th>
+                                    <td><?php $this->text_field_callback(array('field' => 'events_page_title', 'default' => 'Events')); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Events Page Description', 'designzeen-events'); ?></th>
+                                    <td><?php $this->textarea_field_callback(array('field' => 'events_page_description', 'default' => 'Discover our upcoming events and join us for amazing experiences.')); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Enable Structured Data', 'designzeen-events'); ?></th>
+                                    <td><?php $this->checkbox_field_callback(array('field' => 'enable_structured_data', 'default' => '1')); ?></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div id="integration" class="tab-content">
+                        <div class="card">
+                            <h2><?php _e('Integration Settings', 'designzeen-events'); ?></h2>
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row"><?php _e('Google Maps API Key', 'designzeen-events'); ?></th>
+                                    <td><?php $this->text_field_callback(array('field' => 'google_maps_api_key', 'default' => '')); ?>
+                                    <p class="description"><?php _e('Required for map integration in event locations.', 'designzeen-events'); ?></p></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Enable Social Sharing', 'designzeen-events'); ?></th>
+                                    <td><?php $this->checkbox_field_callback(array('field' => 'enable_social_sharing', 'default' => '1')); ?></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Facebook App ID', 'designzeen-events'); ?></th>
+                                    <td><?php $this->text_field_callback(array('field' => 'facebook_app_id', 'default' => '')); ?>
+                                    <p class="description"><?php _e('Required for Facebook sharing integration.', 'designzeen-events'); ?></p></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div id="help" class="tab-content">
+                        <div class="card">
+                            <h2><?php _e('Help & Documentation', 'designzeen-events'); ?></h2>
+                            <div class="dz-events-help-content">
+                                <h3><?php _e('Shortcodes', 'designzeen-events'); ?></h3>
+                                <p><?php _e('Use these shortcodes to display events on your website:', 'designzeen-events'); ?></p>
+                                <ul>
+                                    <li><code>[zeen_events]</code> - <?php _e('Display events grid', 'designzeen-events'); ?></li>
+                                    <li><code>[zeen_events_featured]</code> - <?php _e('Display featured events only', 'designzeen-events'); ?></li>
+                                    <li><code>[zeen_events_upcoming]</code> - <?php _e('Display upcoming events only', 'designzeen-events'); ?></li>
+                                    <li><code>[zeen_events_list]</code> - <?php _e('Display events in list format', 'designzeen-events'); ?></li>
+                                </ul>
+                                
+                                <h3><?php _e('Elementor Integration', 'designzeen-events'); ?></h3>
+                                <p><?php _e('Look for the "Zeen Events" category in Elementor to find our widgets:', 'designzeen-events'); ?></p>
+                                <ul>
+                                    <li><?php _e('Events Grid Widget', 'designzeen-events'); ?></li>
+                                    <li><?php _e('Single Event Widget', 'designzeen-events'); ?></li>
+                                </ul>
+                                
+                                <h3><?php _e('Customization', 'designzeen-events'); ?></h3>
+                                <p><?php _e('Customize your event displays:', 'designzeen-events'); ?></p>
+                                <ul>
+                                    <li><a href="<?php echo admin_url('edit.php?post_type=dz_event&page=dz-events-card-settings'); ?>"><?php _e('Card Settings', 'designzeen-events'); ?></a> - <?php _e('Customize card appearance', 'designzeen-events'); ?></li>
+                                    <li><a href="<?php echo admin_url('edit.php?post_type=dz_event&page=dz-events-custom-fields'); ?>"><?php _e('Custom Fields', 'designzeen-events'); ?></a> - <?php _e('Add custom event fields', 'designzeen-events'); ?></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <?php submit_button(); ?>
+            </form>
+        </div>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            $('.nav-tab').on('click', function(e) {
+                e.preventDefault();
+                var target = $(this).attr('href');
+                
+                $('.nav-tab').removeClass('nav-tab-active');
+                $(this).addClass('nav-tab-active');
+                
+                $('.tab-content').removeClass('active');
+                $(target).addClass('active');
+            });
+        });
+        </script>
+        <?php
+    }
+}
+
+// Initialize Admin Settings
+DZ_Events_Admin_Settings::get_instance();
+
+// Template Customizer for Advanced Layouts
+class DZ_Events_Template_Customizer {
+    
+    private static $instance = null;
+    
+    public static function get_instance() {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    private function __construct() {
+        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('admin_init', array($this, 'register_settings'));
+        add_action('wp_head', array($this, 'output_custom_templates'));
+    }
+    
+    public function add_admin_menu() {
+        add_submenu_page(
+            'edit.php?post_type=dz_event',
+            __('Template Customizer', 'designzeen-events'),
+            __('Template Customizer', 'designzeen-events'),
+            'manage_options',
+            'dz-events-template-customizer',
+            array($this, 'admin_page')
+        );
+    }
+    
+    public function register_settings() {
+        register_setting('dz_events_template_settings', 'dz_events_template_options');
+    }
+    
+    public function admin_page() {
+        if (isset($_POST['save_template'])) {
+            $this->save_template();
+        }
+        
+        $templates = get_option('dz_events_template_options', array());
+        ?>
+        <div class="wrap">
+            <h1><?php _e('Template Customizer', 'designzeen-events'); ?></h1>
+            
+            <div class="dz-template-customizer">
+                <div class="dz-template-sidebar">
+                    <h2><?php _e('Template Library', 'designzeen-events'); ?></h2>
+                    
+                    <div class="dz-template-categories">
+                        <button class="dz-category-btn active" data-category="all"><?php _e('All Templates', 'designzeen-events'); ?></button>
+                        <button class="dz-category-btn" data-category="grid"><?php _e('Grid Layouts', 'designzeen-events'); ?></button>
+                        <button class="dz-category-btn" data-category="list"><?php _e('List Layouts', 'designzeen-events'); ?></button>
+                        <button class="dz-category-btn" data-category="card"><?php _e('Card Styles', 'designzeen-events'); ?></button>
+                        <button class="dz-category-btn" data-category="modern"><?php _e('Modern Styles', 'designzeen-events'); ?></button>
+                    </div>
+                    
+                    <div class="dz-template-preview">
+                        <h3><?php _e('Template Preview', 'designzeen-events'); ?></h3>
+                        <div id="dz-template-preview-content">
+                            <!-- Preview content will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dz-template-main">
+                    <div class="dz-template-editor">
+                        <h2><?php _e('Template Editor', 'designzeen-events'); ?></h2>
+                        
+                        <form method="post" action="">
+                            <div class="dz-template-tabs">
+                                <button type="button" class="dz-tab-btn active" data-tab="html"><?php _e('HTML', 'designzeen-events'); ?></button>
+                                <button type="button" class="dz-tab-btn" data-tab="css"><?php _e('CSS', 'designzeen-events'); ?></button>
+                                <button type="button" class="dz-tab-btn" data-tab="settings"><?php _e('Settings', 'designzeen-events'); ?></button>
+                            </div>
+                            
+                            <div class="dz-template-content">
+                                <div id="html-tab" class="dz-tab-content active">
+                                    <h3><?php _e('HTML Template', 'designzeen-events'); ?></h3>
+                                    <textarea name="template_html" id="template_html" rows="20" style="width: 100%; font-family: monospace;"><?php echo isset($templates['html']) ? esc_textarea($templates['html']) : $this->get_default_html_template(); ?></textarea>
+                                </div>
+                                
+                                <div id="css-tab" class="dz-tab-content">
+                                    <h3><?php _e('CSS Styles', 'designzeen-events'); ?></h3>
+                                    <textarea name="template_css" id="template_css" rows="20" style="width: 100%; font-family: monospace;"><?php echo isset($templates['css']) ? esc_textarea($templates['css']) : $this->get_default_css_template(); ?></textarea>
+                                </div>
+                                
+                                <div id="settings-tab" class="dz-tab-content">
+                                    <h3><?php _e('Template Settings', 'designzeen-events'); ?></h3>
+                                    <table class="form-table">
+                                        <tr>
+                                            <th scope="row"><?php _e('Template Name', 'designzeen-events'); ?></th>
+                                            <td><input type="text" name="template_name" value="<?php echo isset($templates['name']) ? esc_attr($templates['name']) : 'Custom Template'; ?>" style="width: 100%;" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><?php _e('Template Description', 'designzeen-events'); ?></th>
+                                            <td><textarea name="template_description" rows="3" style="width: 100%;"><?php echo isset($templates['description']) ? esc_textarea($templates['description']) : ''; ?></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><?php _e('Template Category', 'designzeen-events'); ?></th>
+                                            <td>
+                                                <select name="template_category" style="width: 100%;">
+                                                    <option value="grid" <?php selected(isset($templates['category']) ? $templates['category'] : 'grid', 'grid'); ?>><?php _e('Grid Layout', 'designzeen-events'); ?></option>
+                                                    <option value="list" <?php selected(isset($templates['category']) ? $templates['category'] : 'grid', 'list'); ?>><?php _e('List Layout', 'designzeen-events'); ?></option>
+                                                    <option value="card" <?php selected(isset($templates['category']) ? $templates['category'] : 'grid', 'card'); ?>><?php _e('Card Style', 'designzeen-events'); ?></option>
+                                                    <option value="modern" <?php selected(isset($templates['category']) ? $templates['category'] : 'grid', 'modern'); ?>><?php _e('Modern Style', 'designzeen-events'); ?></option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><?php _e('Enable Template', 'designzeen-events'); ?></th>
+                                            <td><input type="checkbox" name="template_enabled" value="1" <?php checked(isset($templates['enabled']) ? $templates['enabled'] : 1, 1); ?> /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="dz-template-actions">
+                                <button type="submit" name="save_template" class="button button-primary"><?php _e('Save Template', 'designzeen-events'); ?></button>
+                                <button type="button" id="preview-template" class="button"><?php _e('Preview', 'designzeen-events'); ?></button>
+                                <button type="button" id="reset-template" class="button"><?php _e('Reset to Default', 'designzeen-events'); ?></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+        .dz-template-customizer {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .dz-template-sidebar {
+            width: 300px;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ccd0d4;
+            border-radius: 4px;
+        }
+        
+        .dz-template-main {
+            flex: 1;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ccd0d4;
+            border-radius: 4px;
+        }
+        
+        .dz-template-categories {
+            margin-bottom: 20px;
+        }
+        
+        .dz-category-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            background: #f1f1f1;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            text-align: left;
+        }
+        
+        .dz-category-btn.active,
+        .dz-category-btn:hover {
+            background: #0073aa;
+            color: #fff;
+        }
+        
+        .dz-template-tabs {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .dz-tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .dz-tab-btn.active {
+            border-bottom-color: #0073aa;
+            color: #0073aa;
+        }
+        
+        .dz-tab-content {
+            display: none;
+        }
+        
+        .dz-tab-content.active {
+            display: block;
+        }
+        
+        .dz-template-actions {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .dz-template-actions .button {
+            margin-right: 10px;
+        }
+        </style>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            // Tab switching
+            $('.dz-tab-btn').on('click', function() {
+                var tab = $(this).data('tab');
+                
+                $('.dz-tab-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                $('.dz-tab-content').removeClass('active');
+                $('#' + tab + '-tab').addClass('active');
+            });
+            
+            // Category filtering
+            $('.dz-category-btn').on('click', function() {
+                $('.dz-category-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                var category = $(this).data('category');
+                // Filter templates by category
+                filterTemplates(category);
+            });
+            
+            // Preview template
+            $('#preview-template').on('click', function() {
+                var html = $('#template_html').val();
+                var css = $('#template_css').val();
+                
+                var preview = '<style>' + css + '</style>' + html;
+                $('#dz-template-preview-content').html(preview);
+            });
+            
+            // Reset template
+            $('#reset-template').on('click', function() {
+                if (confirm('<?php _e('Are you sure you want to reset to default template?', 'designzeen-events'); ?>')) {
+                    $('#template_html').val('<?php echo esc_js($this->get_default_html_template()); ?>');
+                    $('#template_css').val('<?php echo esc_js($this->get_default_css_template()); ?>');
+                }
+            });
+            
+            function filterTemplates(category) {
+                // This would filter the template library
+                // For now, just show all templates
+            }
+        });
+        </script>
+        <?php
+    }
+    
+    private function save_template() {
+        $template_data = array(
+            'name' => sanitize_text_field($_POST['template_name']),
+            'description' => sanitize_textarea_field($_POST['template_description']),
+            'category' => sanitize_text_field($_POST['template_category']),
+            'enabled' => isset($_POST['template_enabled']) ? 1 : 0,
+            'html' => wp_kses_post($_POST['template_html']),
+            'css' => wp_strip_all_tags($_POST['template_css'])
+        );
+        
+        update_option('dz_events_template_options', $template_data);
+        
+        echo '<div class="notice notice-success"><p>' . __('Template saved successfully!', 'designzeen-events') . '</p></div>';
+    }
+    
+    private function get_default_html_template() {
+        return '<div class="dz-event-card">
+    <div class="dz-event-image">
+        <a href="{{event_url}}">
+            {{event_image}}
+        </a>
+    </div>
+    <div class="dz-event-content">
+        <h3 class="dz-event-title">
+            <a href="{{event_url}}">{{event_title}}</a>
+        </h3>
+        <div class="dz-event-meta">
+            <div class="dz-meta-item dz-meta-date">📅 {{event_date}}</div>
+            <div class="dz-meta-item dz-meta-time">🕐 {{event_time}}</div>
+            <div class="dz-meta-item dz-meta-location">📍 {{event_location}}</div>
+            <div class="dz-meta-item dz-meta-price">💰 {{event_price}}</div>
+        </div>
+        <div class="dz-event-excerpt">{{event_excerpt}}</div>
+        <div class="dz-event-actions">
+            <a href="{{event_url}}" class="dz-btn dz-btn-primary">View Details</a>
+        </div>
+    </div>
+</div>';
+    }
+    
+    private function get_default_css_template() {
+        return '.dz-event-card {
+    background: #fff;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.dz-event-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.dz-event-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.dz-event-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.dz-event-card:hover .dz-event-image img {
+    transform: scale(1.05);
+}
+
+.dz-event-content {
+    padding: 20px;
+}
+
+.dz-event-title {
+    margin: 0 0 15px 0;
+    font-size: 1.25rem;
+    line-height: 1.3;
+}
+
+.dz-event-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.dz-event-title a:hover {
+    color: #0073aa;
+}
+
+.dz-event-meta {
+    margin: 15px 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.dz-meta-item {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.dz-event-excerpt {
+    margin: 15px 0;
+    color: #666;
+    line-height: 1.5;
+}
+
+.dz-event-actions {
+    margin-top: 20px;
+}
+
+.dz-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.dz-btn:hover {
+    background: #005a87;
+    color: #fff;
+}';
+    }
+    
+    public function output_custom_templates() {
+        $templates = get_option('dz_events_template_options');
+        
+        if (!$templates || !$templates['enabled']) {
+            return;
+        }
+        
+        if (!empty($templates['css'])) {
+            echo '<style type="text/css" id="dz-events-custom-template">';
+            echo $templates['css'];
+            echo '</style>';
+        }
+    }
+}
+
+// Initialize Template Customizer
+DZ_Events_Template_Customizer::get_instance();

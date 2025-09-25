@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Zeen Events
  * Plugin URI: https://designzeen.com
- * Description: Enterprise-grade event management plugin with advanced features including registration system, international & South African payment gateways (PayFast, Yoco, Ozow, etc.), analytics, multi-site support, and innovative Elementor widgets.
+ * Description: Professional event management plugin with multiple layouts, advanced filtering, and Elementor integration.
  * Version: 2.0.0
  * Author: Ronald @ Design Zeen Agency
  * Author URI: https://designzeen.com  
@@ -15,20 +15,6 @@
  * Network: false
  * 
  * Copyright (C) 2024 Design Zeen Agency
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -37,16 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 define( 'DZ_EVENTS_VERSION', '2.0.0' );
 define( 'DZ_EVENTS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'DZ_EVENTS_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
-
-// Load plugin textdomain for translations
-function dz_events_load_textdomain() {
-    load_plugin_textdomain(
-        'designzeen-events',
-        false,
-        dirname( plugin_basename( __FILE__ ) ) . '/languages'
-    );
-}
-add_action('plugins_loaded', 'dz_events_load_textdomain');
 
 // Check WordPress and PHP version compatibility
 function dz_events_check_requirements() {
@@ -90,47 +66,114 @@ if ( ! dz_events_check_requirements() ) {
     return;
 }
 
-// Minimal includes only - Load essential functionality first
-require_once plugin_dir_path(__FILE__) . 'includes/post-types-minimal.php';
-require_once plugin_dir_path(__FILE__) . 'includes/enqueue-minimal.php';
-require_once plugin_dir_path(__FILE__) . 'includes/single-event-minimal.php';
+// Register Events Post Type
+function dz_register_event_post_type() {
+    $labels = array(
+        'name'               => __('Events', 'designzeen-events'),
+        'singular_name'      => __('Event', 'designzeen-events'),
+        'menu_name'          => __('Events', 'designzeen-events'),
+        'name_admin_bar'     => __('Event', 'designzeen-events'),
+        'add_new'            => __('Add New Event', 'designzeen-events'),
+        'add_new_item'       => __('Add New Event', 'designzeen-events'),
+        'new_item'           => __('New Event', 'designzeen-events'),
+        'edit_item'          => __('Edit Event', 'designzeen-events'),
+        'view_item'          => __('View Event', 'designzeen-events'),
+        'all_items'          => __('All Events', 'designzeen-events'),
+        'search_items'       => __('Search Events', 'designzeen-events'),
+    );
 
-// Load additional files only if they exist and are safe
-if (file_exists(plugin_dir_path(__FILE__) . 'includes/meta-boxes.php')) {
-    require_once plugin_dir_path(__FILE__) . 'includes/meta-boxes.php';
-}
-if (file_exists(plugin_dir_path(__FILE__) . 'includes/card-settings.php')) {
-    require_once plugin_dir_path(__FILE__) . 'includes/card-settings.php';
-}
-if (file_exists(plugin_dir_path(__FILE__) . 'includes/admin.php')) {
-    require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
-}
-if (file_exists(plugin_dir_path(__FILE__) . 'includes/single-event.php')) {
-    require_once plugin_dir_path(__FILE__) . 'includes/single-event.php';
-}
-if (file_exists(plugin_dir_path(__FILE__) . 'includes/blocks.php')) {
-    require_once plugin_dir_path(__FILE__) . 'includes/blocks.php';
-}
-if (file_exists(plugin_dir_path(__FILE__) . 'includes/custom-fields.php')) {
-    require_once plugin_dir_path(__FILE__) . 'includes/custom-fields.php';
-}
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'show_in_nav_menus'  => true,
+        'show_in_admin_bar'  => true,
+        'has_archive'        => true,
+        'rewrite'            => array( 'slug' => 'events', 'with_front' => false ),
+        'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ),
+        'show_in_rest'       => true,
+        'menu_icon'          => 'dashicons-calendar-alt',
+        'capability_type'    => 'post',
+        'hierarchical'       => false,
+        'query_var'          => true,
+        'can_export'         => true,
+        'delete_with_user'   => false,
+    );
 
-// Load advanced features only if needed (commented out to prevent errors)
-// require_once plugin_dir_path(__FILE__) . 'includes/class-core.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-database-manager.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-rest-api.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-performance-optimizer.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-security-manager.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-analytics-engine.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-admin-dashboard.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-registration-system.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-payment-gateways.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-multisite-support.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-advanced-management.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-form-integration.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-template-customizer.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-shortcode-handler.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/elementor.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-elementor-widgets-advanced.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-elementor-widgets-unique.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-setup-wizard.php';
+    register_post_type( 'dz_event', $args );
+}
+add_action( 'init', 'dz_register_event_post_type' );
+
+// Register Event Category Taxonomy
+function dz_register_event_taxonomies() {
+    $labels = array(
+        'name'              => __('Event Categories', 'designzeen-events'),
+        'singular_name'     => __('Event Category', 'designzeen-events'),
+        'search_items'      => __('Search Categories', 'designzeen-events'),
+        'all_items'         => __('All Categories', 'designzeen-events'),
+        'parent_item'       => __('Parent Category', 'designzeen-events'),
+        'parent_item_colon' => __('Parent Category:', 'designzeen-events'),
+        'edit_item'         => __('Edit Category', 'designzeen-events'),
+        'update_item'       => __('Update Category', 'designzeen-events'),
+        'add_new_item'      => __('Add New Category', 'designzeen-events'),
+        'new_item_name'     => __('New Category Name', 'designzeen-events'),
+        'menu_name'         => __('Categories', 'designzeen-events'),
+    );
+
+    $args = array(
+        'hierarchical'      => true,
+        'labels'            => $labels,
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'query_var'         => true,
+        'rewrite'           => array( 'slug' => 'event-category' ),
+        'show_in_rest'      => true,
+    );
+
+    register_taxonomy( 'dz_event_category', array( 'dz_event' ), $args );
+}
+add_action( 'init', 'dz_register_event_taxonomies' );
+
+// Flush rewrite rules on activation
+function dz_events_flush_rewrite_rules() {
+    dz_register_event_post_type();
+    dz_register_event_taxonomies();
+    flush_rewrite_rules();
+}
+register_activation_hook( __FILE__, 'dz_events_flush_rewrite_rules' );
+
+// Basic single event template handling
+function dz_single_event_template($template) {
+    if (is_singular('dz_event')) {
+        $custom_template = locate_template(array('single-dz_event.php'));
+        if ($custom_template) {
+            return $custom_template;
+        }
+    }
+    return $template;
+}
+add_filter('template_include', 'dz_single_event_template');
+
+// Basic archive template handling
+function dz_archive_event_template($template) {
+    if (is_post_type_archive('dz_event')) {
+        $custom_template = locate_template(array('archive-dz_event.php'));
+        if ($custom_template) {
+            return $custom_template;
+        }
+    }
+    return $template;
+}
+add_filter('template_include', 'dz_archive_event_template');
+
+// Load plugin textdomain for translations
+function dz_events_load_textdomain() {
+    load_plugin_textdomain(
+        'designzeen-events',
+        false,
+        dirname( plugin_basename( __FILE__ ) ) . '/languages'
+    );
+}
+add_action('plugins_loaded', 'dz_events_load_textdomain');

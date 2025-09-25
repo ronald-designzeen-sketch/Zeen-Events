@@ -19,6 +19,39 @@
     margin: 20px 0;
 }
 
+/* Column Variations */
+.dz-events-columns-1 { grid-template-columns: 1fr; }
+.dz-events-columns-2 { grid-template-columns: repeat(2, 1fr); }
+.dz-events-columns-3 { grid-template-columns: repeat(3, 1fr); }
+.dz-events-columns-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* List Layout */
+.dz-events-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.dz-events-list .dz-event-card {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.dz-events-list .dz-event-image {
+    width: 300px;
+    height: 200px;
+    flex-shrink: 0;
+}
+
+.dz-events-list .dz-event-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 /* Event Card */
 .dz-event-card {
     background: #fff;
@@ -26,11 +59,32 @@
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
 .dz-event-card:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.dz-event-card.dz-featured {
+    border-color: #0073aa;
+    box-shadow: 0 2px 8px rgba(0,115,170,0.2);
+}
+
+/* Featured Badge */
+.dz-featured-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #0073aa;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    z-index: 2;
 }
 
 /* Event Image */
@@ -89,6 +143,13 @@
     margin-right: 8px;
     color: #0073aa;
 }
+
+/* Meta Item Icons */
+.dz-meta-date:before { content: "📅"; }
+.dz-meta-time:before { content: "🕐"; }
+.dz-meta-location:before { content: "📍"; }
+.dz-meta-price:before { content: "💰"; }
+.dz-meta-organizer:before { content: "👤"; }
 
 /* Event Excerpt */
 .dz-event-excerpt {
@@ -190,10 +251,35 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+    .dz-events-columns-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .dz-events-columns-3,
+    .dz-events-columns-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
-    .dz-events-grid {
+    .dz-events-grid,
+    .dz-events-columns-2,
+    .dz-events-columns-3,
+    .dz-events-columns-4 {
         grid-template-columns: 1fr;
         gap: 15px;
+    }
+    
+    .dz-events-list .dz-event-card {
+        flex-direction: column;
+    }
+    
+    .dz-events-list .dz-event-image {
+        width: 100%;
+        height: 200px;
     }
     
     .dz-events-shortcode,
@@ -230,4 +316,52 @@
     padding: 15px;
     border-radius: 4px;
     margin: 20px 0;
+}
+
+/* Widget Styles */
+.dz-events-widget {
+    margin: 0;
+}
+
+.dz-widget-event {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.dz-widget-event:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.dz-widget-event h4 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+.dz-widget-event h4 a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.dz-widget-event h4 a:hover {
+    color: #0073aa;
+}
+
+.dz-widget-date,
+.dz-widget-location {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 3px 0;
+}
+
+.dz-widget-date:before {
+    content: "📅 ";
+}
+
+.dz-widget-location:before {
+    content: "📍 ";
 }

@@ -207,14 +207,26 @@ function dz_events_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'dz_events_enqueue_assets');
 
-// Basic shortcode for displaying events
+// Enhanced shortcode for displaying events
 function dz_events_shortcode($atts) {
     $atts = shortcode_atts(array(
         'posts_per_page' => 6,
         'category' => '',
-        'orderby' => 'date',
-        'order' => 'DESC',
-        'layout' => 'grid'
+        'orderby' => 'meta_value',
+        'meta_key' => '_dz_event_start',
+        'order' => 'ASC',
+        'layout' => 'grid',
+        'show_date' => 'true',
+        'show_time' => 'true',
+        'show_location' => 'true',
+        'show_price' => 'true',
+        'show_excerpt' => 'true',
+        'show_organizer' => 'false',
+        'featured_only' => 'false',
+        'upcoming_only' => 'true',
+        'columns' => '3',
+        'image_size' => 'medium',
+        'button_text' => 'View Details'
     ), $atts);
 
     $args = array(
@@ -225,6 +237,12 @@ function dz_events_shortcode($atts) {
         'post_status' => 'publish'
     );
 
+    // Set meta key for date ordering
+    if ($atts['orderby'] === 'meta_value') {
+        $args['meta_key'] = $atts['meta_key'];
+    }
+
+    // Category filter
     if (!empty($atts['category'])) {
         $args['tax_query'] = array(
             array(
@@ -235,52 +253,129 @@ function dz_events_shortcode($atts) {
         );
     }
 
+    // Featured events only
+    if ($atts['featured_only'] === 'true') {
+        $args['meta_query'] = array(
+            array(
+                'key' => '_dz_event_featured',
+                'value' => '1',
+                'compare' => '='
+            )
+        );
+    }
+
+    // Upcoming events only
+    if ($atts['upcoming_only'] === 'true') {
+        $today = date('Y-m-d');
+        if (!isset($args['meta_query'])) {
+            $args['meta_query'] = array();
+        }
+        $args['meta_query'][] = array(
+            'key' => '_dz_event_start',
+            'value' => $today,
+            'compare' => '>=',
+            'type' => 'DATE'
+        );
+        $args['meta_query']['relation'] = 'AND';
+    }
+
     $events = new WP_Query($args);
     
     if (!$events->have_posts()) {
-        return '<p>No events found.</p>';
+        return '<div class="dz-events-no-events"><p>' . __('No events found.', 'designzeen-events') . '</p></div>';
     }
 
-    $output = '<div class="dz-events-shortcode dz-events-' . esc_attr($atts['layout']) . '">';
+    $layout_class = 'dz-events-' . esc_attr($atts['layout']);
+    $columns_class = 'dz-events-columns-' . esc_attr($atts['columns']);
+    
+    $output = '<div class="dz-events-shortcode ' . $layout_class . ' ' . $columns_class . '">';
     
     while ($events->have_posts()) {
         $events->the_post();
         $event_id = get_the_ID();
         
         $start_date = get_post_meta($event_id, '_dz_event_start', true);
+        $end_date = get_post_meta($event_id, '_dz_event_end', true);
+        $start_time = get_post_meta($event_id, '_dz_event_start_time', true);
+        $end_time = get_post_meta($event_id, '_dz_event_end_time', true);
         $location = get_post_meta($event_id, '_dz_event_location', true);
         $price = get_post_meta($event_id, '_dz_event_price', true);
+        $organizer = get_post_meta($event_id, '_dz_event_organizer', true);
+        $featured = get_post_meta($event_id, '_dz_event_featured', true);
         
-        $output .= '<div class="dz-event-card">';
+        $output .= '<div class="dz-event-card' . ($featured ? ' dz-featured' : '') . '">';
         
+        // Featured badge
+        if ($featured) {
+            $output .= '<div class="dz-featured-badge">' . __('Featured', 'designzeen-events') . '</div>';
+        }
+        
+        // Event image
         if (has_post_thumbnail()) {
             $output .= '<div class="dz-event-image">';
             $output .= '<a href="' . get_permalink() . '">';
-            $output .= get_the_post_thumbnail($event_id, 'medium');
+            $output .= get_the_post_thumbnail($event_id, $atts['image_size']);
             $output .= '</a></div>';
         }
         
         $output .= '<div class="dz-event-content">';
         $output .= '<h3 class="dz-event-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>';
         
+        // Event meta information
         $output .= '<div class="dz-event-meta">';
-        if ($start_date) {
-            $output .= '<div class="dz-meta-item">' . date('M j, Y', strtotime($start_date)) . '</div>';
+        
+        if ($atts['show_date'] === 'true' && $start_date) {
+            $date_format = 'M j, Y';
+            if ($end_date && $end_date !== $start_date) {
+                $date_format = 'M j - j, Y';
+            }
+            $output .= '<div class="dz-meta-item dz-meta-date">';
+            $output .= '<i class="dz-icon dz-icon-calendar"></i> ';
+            $output .= date($date_format, strtotime($start_date));
+            $output .= '</div>';
         }
-        if ($location) {
-            $output .= '<div class="dz-meta-item">' . esc_html($location) . '</div>';
+        
+        if ($atts['show_time'] === 'true' && $start_time) {
+            $output .= '<div class="dz-meta-item dz-meta-time">';
+            $output .= '<i class="dz-icon dz-icon-clock"></i> ';
+            $output .= date('g:i A', strtotime($start_time));
+            if ($end_time) {
+                $output .= ' - ' . date('g:i A', strtotime($end_time));
+            }
+            $output .= '</div>';
         }
-        if ($price) {
-            $output .= '<div class="dz-meta-item">' . esc_html($price) . '</div>';
+        
+        if ($atts['show_location'] === 'true' && $location) {
+            $output .= '<div class="dz-meta-item dz-meta-location">';
+            $output .= '<i class="dz-icon dz-icon-location"></i> ';
+            $output .= esc_html($location);
+            $output .= '</div>';
         }
+        
+        if ($atts['show_price'] === 'true' && $price) {
+            $output .= '<div class="dz-meta-item dz-meta-price">';
+            $output .= '<i class="dz-icon dz-icon-price"></i> ';
+            $output .= esc_html($price);
+            $output .= '</div>';
+        }
+        
+        if ($atts['show_organizer'] === 'true' && $organizer) {
+            $output .= '<div class="dz-meta-item dz-meta-organizer">';
+            $output .= '<i class="dz-icon dz-icon-user"></i> ';
+            $output .= esc_html($organizer);
+            $output .= '</div>';
+        }
+        
         $output .= '</div>';
         
-        if (has_excerpt()) {
+        // Event excerpt
+        if ($atts['show_excerpt'] === 'true' && has_excerpt()) {
             $output .= '<div class="dz-event-excerpt">' . get_the_excerpt() . '</div>';
         }
         
+        // Event actions
         $output .= '<div class="dz-event-actions">';
-        $output .= '<a href="' . get_permalink() . '" class="dz-btn dz-btn-primary">View Details</a>';
+        $output .= '<a href="' . get_permalink() . '" class="dz-btn dz-btn-primary">' . esc_html($atts['button_text']) . '</a>';
         $output .= '</div>';
         
         $output .= '</div></div>';
@@ -293,6 +388,27 @@ function dz_events_shortcode($atts) {
     return $output;
 }
 add_shortcode('zeen_events', 'dz_events_shortcode');
+
+// Additional shortcodes for specific use cases
+function dz_events_featured_shortcode($atts) {
+    $atts['featured_only'] = 'true';
+    return dz_events_shortcode($atts);
+}
+add_shortcode('zeen_events_featured', 'dz_events_featured_shortcode');
+
+function dz_events_upcoming_shortcode($atts) {
+    $atts['upcoming_only'] = 'true';
+    $atts['posts_per_page'] = isset($atts['posts_per_page']) ? $atts['posts_per_page'] : 3;
+    return dz_events_shortcode($atts);
+}
+add_shortcode('zeen_events_upcoming', 'dz_events_upcoming_shortcode');
+
+function dz_events_list_shortcode($atts) {
+    $atts['layout'] = 'list';
+    $atts['columns'] = '1';
+    return dz_events_shortcode($atts);
+}
+add_shortcode('zeen_events_list', 'dz_events_list_shortcode');
 
 // Add basic admin columns for events
 function dz_events_admin_columns($columns) {
@@ -369,3 +485,299 @@ function dz_events_ajax_handler() {
 }
 add_action('wp_ajax_dz_events_get_event_data', 'dz_events_ajax_handler');
 add_action('wp_ajax_nopriv_dz_events_get_event_data', 'dz_events_ajax_handler');
+
+// Add meta boxes for event data
+function dz_events_add_meta_boxes() {
+    add_meta_box(
+        'dz_event_details',
+        __('Event Details', 'designzeen-events'),
+        'dz_events_meta_box_callback',
+        'dz_event',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'dz_events_add_meta_boxes');
+
+function dz_events_meta_box_callback($post) {
+    wp_nonce_field('dz_events_meta_box', 'dz_events_meta_box_nonce');
+    
+    $start_date = get_post_meta($post->ID, '_dz_event_start', true);
+    $end_date = get_post_meta($post->ID, '_dz_event_end', true);
+    $start_time = get_post_meta($post->ID, '_dz_event_start_time', true);
+    $end_time = get_post_meta($post->ID, '_dz_event_end_time', true);
+    $location = get_post_meta($post->ID, '_dz_event_location', true);
+    $address = get_post_meta($post->ID, '_dz_event_address', true);
+    $price = get_post_meta($post->ID, '_dz_event_price', true);
+    $capacity = get_post_meta($post->ID, '_dz_event_capacity', true);
+    $organizer = get_post_meta($post->ID, '_dz_event_organizer', true);
+    $contact_email = get_post_meta($post->ID, '_dz_event_contact_email', true);
+    $contact_phone = get_post_meta($post->ID, '_dz_event_contact_phone', true);
+    $website = get_post_meta($post->ID, '_dz_event_website', true);
+    $featured = get_post_meta($post->ID, '_dz_event_featured', true);
+    
+    echo '<table class="form-table">';
+    
+    // Start Date
+    echo '<tr>';
+    echo '<th><label for="dz_event_start">' . __('Start Date', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="date" id="dz_event_start" name="dz_event_start" value="' . esc_attr($start_date) . '" /></td>';
+    echo '</tr>';
+    
+    // End Date
+    echo '<tr>';
+    echo '<th><label for="dz_event_end">' . __('End Date', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="date" id="dz_event_end" name="dz_event_end" value="' . esc_attr($end_date) . '" /></td>';
+    echo '</tr>';
+    
+    // Start Time
+    echo '<tr>';
+    echo '<th><label for="dz_event_start_time">' . __('Start Time', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="time" id="dz_event_start_time" name="dz_event_start_time" value="' . esc_attr($start_time) . '" /></td>';
+    echo '</tr>';
+    
+    // End Time
+    echo '<tr>';
+    echo '<th><label for="dz_event_end_time">' . __('End Time', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="time" id="dz_event_end_time" name="dz_event_end_time" value="' . esc_attr($end_time) . '" /></td>';
+    echo '</tr>';
+    
+    // Location
+    echo '<tr>';
+    echo '<th><label for="dz_event_location">' . __('Location/Venue', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="text" id="dz_event_location" name="dz_event_location" value="' . esc_attr($location) . '" style="width: 100%;" /></td>';
+    echo '</tr>';
+    
+    // Address
+    echo '<tr>';
+    echo '<th><label for="dz_event_address">' . __('Full Address', 'designzeen-events') . '</label></th>';
+    echo '<td><textarea id="dz_event_address" name="dz_event_address" rows="3" style="width: 100%;">' . esc_textarea($address) . '</textarea></td>';
+    echo '</tr>';
+    
+    // Price
+    echo '<tr>';
+    echo '<th><label for="dz_event_price">' . __('Price', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="text" id="dz_event_price" name="dz_event_price" value="' . esc_attr($price) . '" placeholder="e.g., $50, Free, $25-$100" /></td>';
+    echo '</tr>';
+    
+    // Capacity
+    echo '<tr>';
+    echo '<th><label for="dz_event_capacity">' . __('Capacity', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="number" id="dz_event_capacity" name="dz_event_capacity" value="' . esc_attr($capacity) . '" min="1" /></td>';
+    echo '</tr>';
+    
+    // Organizer
+    echo '<tr>';
+    echo '<th><label for="dz_event_organizer">' . __('Organizer', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="text" id="dz_event_organizer" name="dz_event_organizer" value="' . esc_attr($organizer) . '" style="width: 100%;" /></td>';
+    echo '</tr>';
+    
+    // Contact Email
+    echo '<tr>';
+    echo '<th><label for="dz_event_contact_email">' . __('Contact Email', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="email" id="dz_event_contact_email" name="dz_event_contact_email" value="' . esc_attr($contact_email) . '" style="width: 100%;" /></td>';
+    echo '</tr>';
+    
+    // Contact Phone
+    echo '<tr>';
+    echo '<th><label for="dz_event_contact_phone">' . __('Contact Phone', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="tel" id="dz_event_contact_phone" name="dz_event_contact_phone" value="' . esc_attr($contact_phone) . '" /></td>';
+    echo '</tr>';
+    
+    // Website
+    echo '<tr>';
+    echo '<th><label for="dz_event_website">' . __('Event Website', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="url" id="dz_event_website" name="dz_event_website" value="' . esc_attr($website) . '" style="width: 100%;" /></td>';
+    echo '</tr>';
+    
+    // Featured Event
+    echo '<tr>';
+    echo '<th><label for="dz_event_featured">' . __('Featured Event', 'designzeen-events') . '</label></th>';
+    echo '<td><input type="checkbox" id="dz_event_featured" name="dz_event_featured" value="1" ' . checked($featured, 1, false) . ' /> <label for="dz_event_featured">' . __('Mark as featured event', 'designzeen-events') . '</label></td>';
+    echo '</tr>';
+    
+    echo '</table>';
+}
+
+function dz_events_save_meta_box($post_id) {
+    if (!isset($_POST['dz_events_meta_box_nonce'])) {
+        return;
+    }
+    
+    if (!wp_verify_nonce($_POST['dz_events_meta_box_nonce'], 'dz_events_meta_box')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    $fields = array(
+        'dz_event_start',
+        'dz_event_end',
+        'dz_event_start_time',
+        'dz_event_end_time',
+        'dz_event_location',
+        'dz_event_address',
+        'dz_event_price',
+        'dz_event_capacity',
+        'dz_event_organizer',
+        'dz_event_contact_email',
+        'dz_event_contact_phone',
+        'dz_event_website'
+    );
+    
+    foreach ($fields as $field) {
+        if (isset($_POST[$field])) {
+            update_post_meta($post_id, '_' . $field, sanitize_text_field($_POST[$field]));
+        }
+    }
+    
+    // Handle featured checkbox
+    $featured = isset($_POST['dz_event_featured']) ? 1 : 0;
+    update_post_meta($post_id, '_dz_event_featured', $featured);
+}
+add_action('save_post', 'dz_events_save_meta_box');
+
+// Register WordPress Widget
+class DZ_Events_Widget extends WP_Widget {
+    
+    public function __construct() {
+        parent::__construct(
+            'dz_events_widget',
+            __('Zeen Events Widget', 'designzeen-events'),
+            array('description' => __('Display events in a widget', 'designzeen-events'))
+        );
+    }
+    
+    public function widget($args, $instance) {
+        $title = apply_filters('widget_title', $instance['title']);
+        $number = !empty($instance['number']) ? absint($instance['number']) : 3;
+        $show_date = !empty($instance['show_date']) ? 1 : 0;
+        $show_location = !empty($instance['show_location']) ? 1 : 0;
+        $featured_only = !empty($instance['featured_only']) ? 1 : 0;
+        $category = !empty($instance['category']) ? $instance['category'] : '';
+        
+        echo $args['before_widget'];
+        
+        if (!empty($title)) {
+            echo $args['before_title'] . $title . $args['after_title'];
+        }
+        
+        $query_args = array(
+            'post_type' => 'dz_event',
+            'posts_per_page' => $number,
+            'post_status' => 'publish',
+            'orderby' => 'meta_value',
+            'meta_key' => '_dz_event_start',
+            'order' => 'ASC'
+        );
+        
+        if ($featured_only) {
+            $query_args['meta_query'] = array(
+                array(
+                    'key' => '_dz_event_featured',
+                    'value' => '1',
+                    'compare' => '='
+                )
+            );
+        }
+        
+        if (!empty($category)) {
+            $query_args['tax_query'] = array(
+                array(
+                    'taxonomy' => 'dz_event_category',
+                    'field' => 'slug',
+                    'terms' => $category
+                )
+            );
+        }
+        
+        $events = new WP_Query($query_args);
+        
+        if ($events->have_posts()) {
+            echo '<div class="dz-events-widget">';
+            while ($events->have_posts()) {
+                $events->the_post();
+                $event_id = get_the_ID();
+                $start_date = get_post_meta($event_id, '_dz_event_start', true);
+                $location = get_post_meta($event_id, '_dz_event_location', true);
+                
+                echo '<div class="dz-widget-event">';
+                echo '<h4><a href="' . get_permalink() . '">' . get_the_title() . '</a></h4>';
+                
+                if ($show_date && $start_date) {
+                    echo '<div class="dz-widget-date">' . date('M j, Y', strtotime($start_date)) . '</div>';
+                }
+                
+                if ($show_location && $location) {
+                    echo '<div class="dz-widget-location">' . esc_html($location) . '</div>';
+                }
+                
+                echo '</div>';
+            }
+            echo '</div>';
+            wp_reset_postdata();
+        } else {
+            echo '<p>' . __('No events found.', 'designzeen-events') . '</p>';
+        }
+        
+        echo $args['after_widget'];
+    }
+    
+    public function form($instance) {
+        $title = !empty($instance['title']) ? $instance['title'] : __('Upcoming Events', 'designzeen-events');
+        $number = !empty($instance['number']) ? absint($instance['number']) : 3;
+        $show_date = !empty($instance['show_date']) ? 1 : 0;
+        $show_location = !empty($instance['show_location']) ? 1 : 0;
+        $featured_only = !empty($instance['featured_only']) ? 1 : 0;
+        $category = !empty($instance['category']) ? $instance['category'] : '';
+        ?>
+        <p>
+            <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', 'designzeen-events'); ?></label>
+            <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>">
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id('number'); ?>"><?php _e('Number of events to show:', 'designzeen-events'); ?></label>
+            <input class="tiny-text" id="<?php echo $this->get_field_id('number'); ?>" name="<?php echo $this->get_field_name('number'); ?>" type="number" step="1" min="1" value="<?php echo $number; ?>" size="3">
+        </p>
+        <p>
+            <input class="checkbox" type="checkbox" <?php checked($show_date); ?> id="<?php echo $this->get_field_id('show_date'); ?>" name="<?php echo $this->get_field_name('show_date'); ?>" />
+            <label for="<?php echo $this->get_field_id('show_date'); ?>"><?php _e('Show event date', 'designzeen-events'); ?></label>
+        </p>
+        <p>
+            <input class="checkbox" type="checkbox" <?php checked($show_location); ?> id="<?php echo $this->get_field_id('show_location'); ?>" name="<?php echo $this->get_field_name('show_location'); ?>" />
+            <label for="<?php echo $this->get_field_id('show_location'); ?>"><?php _e('Show event location', 'designzeen-events'); ?></label>
+        </p>
+        <p>
+            <input class="checkbox" type="checkbox" <?php checked($featured_only); ?> id="<?php echo $this->get_field_id('featured_only'); ?>" name="<?php echo $this->get_field_name('featured_only'); ?>" />
+            <label for="<?php echo $this->get_field_id('featured_only'); ?>"><?php _e('Show only featured events', 'designzeen-events'); ?></label>
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id('category'); ?>"><?php _e('Category (optional):', 'designzeen-events'); ?></label>
+            <input class="widefat" id="<?php echo $this->get_field_id('category'); ?>" name="<?php echo $this->get_field_name('category'); ?>" type="text" value="<?php echo esc_attr($category); ?>" placeholder="<?php _e('Category slug', 'designzeen-events'); ?>">
+        </p>
+        <?php
+    }
+    
+    public function update($new_instance, $old_instance) {
+        $instance = array();
+        $instance['title'] = (!empty($new_instance['title'])) ? sanitize_text_field($new_instance['title']) : '';
+        $instance['number'] = (!empty($new_instance['number'])) ? absint($new_instance['number']) : 3;
+        $instance['show_date'] = !empty($new_instance['show_date']) ? 1 : 0;
+        $instance['show_location'] = !empty($new_instance['show_location']) ? 1 : 0;
+        $instance['featured_only'] = !empty($new_instance['featured_only']) ? 1 : 0;
+        $instance['category'] = (!empty($new_instance['category'])) ? sanitize_text_field($new_instance['category']) : '';
+        
+        return $instance;
+    }
+}
+
+function dz_events_register_widget() {
+    register_widget('DZ_Events_Widget');
+}
+add_action('widgets_init', 'dz_events_register_widget');

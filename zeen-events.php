@@ -781,3 +781,1095 @@ function dz_events_register_widget() {
     register_widget('DZ_Events_Widget');
 }
 add_action('widgets_init', 'dz_events_register_widget');
+
+// Card Settings and Design Customization System
+class DZ_Events_Card_Settings {
+    
+    private static $instance = null;
+    
+    public static function get_instance() {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    private function __construct() {
+        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('admin_init', array($this, 'register_settings'));
+        add_action('wp_head', array($this, 'output_custom_css'));
+    }
+    
+    public function add_admin_menu() {
+        add_submenu_page(
+            'edit.php?post_type=dz_event',
+            __('Card Settings', 'designzeen-events'),
+            __('Card Settings', 'designzeen-events'),
+            'manage_options',
+            'dz-events-card-settings',
+            array($this, 'admin_page')
+        );
+    }
+    
+    public function register_settings() {
+        register_setting('dz_events_card_settings', 'dz_events_card_options');
+        
+        add_settings_section(
+            'dz_events_card_design',
+            __('Card Design Settings', 'designzeen-events'),
+            array($this, 'design_section_callback'),
+            'dz-events-card-settings'
+        );
+        
+        add_settings_field(
+            'card_background_color',
+            __('Card Background Color', 'designzeen-events'),
+            array($this, 'color_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'card_background_color', 'default' => '#ffffff')
+        );
+        
+        add_settings_field(
+            'card_border_color',
+            __('Card Border Color', 'designzeen-events'),
+            array($this, 'color_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'card_border_color', 'default' => '#e1e1e1')
+        );
+        
+        add_settings_field(
+            'card_border_radius',
+            __('Card Border Radius (px)', 'designzeen-events'),
+            array($this, 'number_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'card_border_radius', 'default' => '8', 'min' => '0', 'max' => '50')
+        );
+        
+        add_settings_field(
+            'card_shadow',
+            __('Card Shadow', 'designzeen-events'),
+            array($this, 'select_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'card_shadow', 'default' => 'medium', 'options' => array(
+                'none' => __('None', 'designzeen-events'),
+                'light' => __('Light', 'designzeen-events'),
+                'medium' => __('Medium', 'designzeen-events'),
+                'heavy' => __('Heavy', 'designzeen-events')
+            ))
+        );
+        
+        add_settings_field(
+            'title_color',
+            __('Title Color', 'designzeen-events'),
+            array($this, 'color_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'title_color', 'default' => '#333333')
+        );
+        
+        add_settings_field(
+            'title_font_size',
+            __('Title Font Size (px)', 'designzeen-events'),
+            array($this, 'number_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'title_font_size', 'default' => '20', 'min' => '12', 'max' => '48')
+        );
+        
+        add_settings_field(
+            'meta_text_color',
+            __('Meta Text Color', 'designzeen-events'),
+            array($this, 'color_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'meta_text_color', 'default' => '#666666')
+        );
+        
+        add_settings_field(
+            'button_background_color',
+            __('Button Background Color', 'designzeen-events'),
+            array($this, 'color_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'button_background_color', 'default' => '#0073aa')
+        );
+        
+        add_settings_field(
+            'button_text_color',
+            __('Button Text Color', 'designzeen-events'),
+            array($this, 'color_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'button_text_color', 'default' => '#ffffff')
+        );
+        
+        add_settings_field(
+            'button_hover_color',
+            __('Button Hover Color', 'designzeen-events'),
+            array($this, 'color_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'button_hover_color', 'default' => '#005177')
+        );
+        
+        add_settings_field(
+            'featured_badge_color',
+            __('Featured Badge Color', 'designzeen-events'),
+            array($this, 'color_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'featured_badge_color', 'default' => '#0073aa')
+        );
+        
+        add_settings_field(
+            'grid_gap',
+            __('Grid Gap (px)', 'designzeen-events'),
+            array($this, 'number_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'grid_gap', 'default' => '20', 'min' => '0', 'max' => '50')
+        );
+        
+        add_settings_field(
+            'image_height',
+            __('Image Height (px)', 'designzeen-events'),
+            array($this, 'number_field_callback'),
+            'dz-events-card-settings',
+            'dz_events_card_design',
+            array('field' => 'image_height', 'default' => '200', 'min' => '100', 'max' => '400')
+        );
+    }
+    
+    public function design_section_callback() {
+        echo '<p>' . __('Customize the appearance of your event cards. Changes will be applied globally to all event displays.', 'designzeen-events') . '</p>';
+    }
+    
+    public function color_field_callback($args) {
+        $options = get_option('dz_events_card_options');
+        $value = isset($options[$args['field']]) ? $options[$args['field']] : $args['default'];
+        echo '<input type="color" name="dz_events_card_options[' . $args['field'] . ']" value="' . esc_attr($value) . '" />';
+    }
+    
+    public function number_field_callback($args) {
+        $options = get_option('dz_events_card_options');
+        $value = isset($options[$args['field']]) ? $options[$args['field']] : $args['default'];
+        $min = isset($args['min']) ? $args['min'] : '';
+        $max = isset($args['max']) ? $args['max'] : '';
+        echo '<input type="number" name="dz_events_card_options[' . $args['field'] . ']" value="' . esc_attr($value) . '" min="' . $min . '" max="' . $max . '" />';
+    }
+    
+    public function select_field_callback($args) {
+        $options = get_option('dz_events_card_options');
+        $value = isset($options[$args['field']]) ? $options[$args['field']] : $args['default'];
+        echo '<select name="dz_events_card_options[' . $args['field'] . ']">';
+        foreach ($args['options'] as $key => $label) {
+            echo '<option value="' . $key . '" ' . selected($value, $key, false) . '>' . $label . '</option>';
+        }
+        echo '</select>';
+    }
+    
+    public function admin_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php _e('Event Card Settings', 'designzeen-events'); ?></h1>
+            <form method="post" action="options.php">
+                <?php
+                settings_fields('dz_events_card_settings');
+                do_settings_sections('dz-events-card-settings');
+                submit_button();
+                ?>
+            </form>
+            
+            <div class="card" style="margin-top: 20px;">
+                <h2><?php _e('Preview', 'designzeen-events'); ?></h2>
+                <p><?php _e('Here\'s how your event cards will look with the current settings:', 'designzeen-events'); ?></p>
+                <div id="dz-card-preview" style="max-width: 300px; margin: 20px 0;">
+                    <!-- Preview will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            function updatePreview() {
+                var options = {};
+                $('input, select').each(function() {
+                    var name = $(this).attr('name');
+                    if (name && name.startsWith('dz_events_card_options[')) {
+                        var field = name.match(/\[([^\]]+)\]/)[1];
+                        options[field] = $(this).val();
+                    }
+                });
+                
+                var preview = $('#dz-card-preview');
+                var shadow = '';
+                switch(options.card_shadow) {
+                    case 'light': shadow = '0 1px 3px rgba(0,0,0,0.1)'; break;
+                    case 'medium': shadow = '0 2px 8px rgba(0,0,0,0.15)'; break;
+                    case 'heavy': shadow = '0 4px 16px rgba(0,0,0,0.2)'; break;
+                    default: shadow = 'none';
+                }
+                
+                preview.html(`
+                    <div style="
+                        background: ${options.card_background_color || '#ffffff'};
+                        border: 1px solid ${options.card_border_color || '#e1e1e1'};
+                        border-radius: ${options.card_border_radius || '8'}px;
+                        box-shadow: ${shadow};
+                        overflow: hidden;
+                        margin-bottom: ${options.grid_gap || '20'}px;
+                    ">
+                        <div style="
+                            height: ${options.image_height || '200'}px;
+                            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #999;
+                        ">Event Image</div>
+                        <div style="padding: 20px;">
+                            <h3 style="
+                                color: ${options.title_color || '#333333'};
+                                font-size: ${options.title_font_size || '20'}px;
+                                margin: 0 0 15px 0;
+                            ">Sample Event Title</h3>
+                            <div style="
+                                color: ${options.meta_text_color || '#666666'};
+                                margin-bottom: 15px;
+                                font-size: 14px;
+                            ">📅 Dec 25, 2024 • 📍 Sample Location</div>
+                            <button style="
+                                background: ${options.button_background_color || '#0073aa'};
+                                color: ${options.button_text_color || '#ffffff'};
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 4px;
+                                cursor: pointer;
+                            ">View Details</button>
+                        </div>
+                    </div>
+                `);
+            }
+            
+            $('input, select').on('change input', updatePreview);
+            updatePreview();
+        });
+        </script>
+        <?php
+    }
+    
+    public function output_custom_css() {
+        $options = get_option('dz_events_card_options');
+        if (!$options) return;
+        
+        $css = '<style type="text/css">';
+        $css .= '.dz-event-card {';
+        
+        if (isset($options['card_background_color'])) {
+            $css .= 'background-color: ' . esc_attr($options['card_background_color']) . ';';
+        }
+        
+        if (isset($options['card_border_color'])) {
+            $css .= 'border-color: ' . esc_attr($options['card_border_color']) . ';';
+        }
+        
+        if (isset($options['card_border_radius'])) {
+            $css .= 'border-radius: ' . esc_attr($options['card_border_radius']) . 'px;';
+        }
+        
+        if (isset($options['card_shadow'])) {
+            switch ($options['card_shadow']) {
+                case 'light':
+                    $css .= 'box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
+                    break;
+                case 'medium':
+                    $css .= 'box-shadow: 0 2px 8px rgba(0,0,0,0.15);';
+                    break;
+                case 'heavy':
+                    $css .= 'box-shadow: 0 4px 16px rgba(0,0,0,0.2);';
+                    break;
+            }
+        }
+        
+        $css .= '}';
+        
+        if (isset($options['title_color'])) {
+            $css .= '.dz-event-title a { color: ' . esc_attr($options['title_color']) . '; }';
+        }
+        
+        if (isset($options['title_font_size'])) {
+            $css .= '.dz-event-title { font-size: ' . esc_attr($options['title_font_size']) . 'px; }';
+        }
+        
+        if (isset($options['meta_text_color'])) {
+            $css .= '.dz-event-meta, .dz-meta-item { color: ' . esc_attr($options['meta_text_color']) . '; }';
+        }
+        
+        if (isset($options['button_background_color'])) {
+            $css .= '.dz-btn-primary { background-color: ' . esc_attr($options['button_background_color']) . '; }';
+        }
+        
+        if (isset($options['button_text_color'])) {
+            $css .= '.dz-btn-primary { color: ' . esc_attr($options['button_text_color']) . '; }';
+        }
+        
+        if (isset($options['button_hover_color'])) {
+            $css .= '.dz-btn-primary:hover { background-color: ' . esc_attr($options['button_hover_color']) . '; }';
+        }
+        
+        if (isset($options['featured_badge_color'])) {
+            $css .= '.dz-featured-badge { background-color: ' . esc_attr($options['featured_badge_color']) . '; }';
+        }
+        
+        if (isset($options['grid_gap'])) {
+            $css .= '.dz-events-shortcode { gap: ' . esc_attr($options['grid_gap']) . 'px; }';
+        }
+        
+        if (isset($options['image_height'])) {
+            $css .= '.dz-event-image { height: ' . esc_attr($options['image_height']) . 'px; }';
+            $css .= '.dz-event-image img { height: ' . esc_attr($options['image_height']) . 'px; }';
+        }
+        
+        $css .= '</style>';
+        
+        echo $css;
+    }
+}
+
+// Initialize Card Settings
+DZ_Events_Card_Settings::get_instance();
+
+// Custom Fields System
+class DZ_Events_Custom_Fields {
+    
+    private static $instance = null;
+    
+    public static function get_instance() {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    private function __construct() {
+        add_action('add_meta_boxes', array($this, 'add_custom_fields_meta_box'));
+        add_action('save_post', array($this, 'save_custom_fields'));
+        add_action('admin_menu', array($this, 'add_custom_fields_admin_menu'));
+        add_action('admin_init', array($this, 'register_custom_fields_settings'));
+    }
+    
+    public function add_custom_fields_meta_box() {
+        add_meta_box(
+            'dz_events_custom_fields',
+            __('Custom Fields', 'designzeen-events'),
+            array($this, 'custom_fields_meta_box_callback'),
+            'dz_event',
+            'normal',
+            'high'
+        );
+    }
+    
+    public function custom_fields_meta_box_callback($post) {
+        wp_nonce_field('dz_events_custom_fields', 'dz_events_custom_fields_nonce');
+        
+        $custom_fields = get_option('dz_events_custom_fields', array());
+        $post_meta = get_post_meta($post->ID, '_dz_events_custom_fields', true);
+        
+        echo '<div id="dz-custom-fields-container">';
+        
+        if (empty($custom_fields)) {
+            echo '<p>' . __('No custom fields defined. <a href="' . admin_url('edit.php?post_type=dz_event&page=dz-events-custom-fields') . '">Add custom fields</a> to extend your events.', 'designzeen-events') . '</p>';
+        } else {
+            foreach ($custom_fields as $field) {
+                $field_value = isset($post_meta[$field['name']]) ? $post_meta[$field['name']] : '';
+                
+                echo '<div class="dz-custom-field" style="margin-bottom: 15px;">';
+                echo '<label for="dz_custom_field_' . esc_attr($field['name']) . '" style="display: block; margin-bottom: 5px; font-weight: bold;">';
+                echo esc_html($field['label']);
+                if ($field['required']) {
+                    echo ' <span style="color: red;">*</span>';
+                }
+                echo '</label>';
+                
+                switch ($field['type']) {
+                    case 'text':
+                        echo '<input type="text" id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" value="' . esc_attr($field_value) . '" style="width: 100%;" />';
+                        break;
+                    case 'textarea':
+                        echo '<textarea id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" rows="3" style="width: 100%;">' . esc_textarea($field_value) . '</textarea>';
+                        break;
+                    case 'number':
+                        echo '<input type="number" id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" value="' . esc_attr($field_value) . '" style="width: 100%;" />';
+                        break;
+                    case 'email':
+                        echo '<input type="email" id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" value="' . esc_attr($field_value) . '" style="width: 100%;" />';
+                        break;
+                    case 'url':
+                        echo '<input type="url" id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" value="' . esc_attr($field_value) . '" style="width: 100%;" />';
+                        break;
+                    case 'select':
+                        echo '<select id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" style="width: 100%;">';
+                        echo '<option value="">' . __('Select an option', 'designzeen-events') . '</option>';
+                        $options = explode("\n", $field['options']);
+                        foreach ($options as $option) {
+                            $option = trim($option);
+                            if (!empty($option)) {
+                                echo '<option value="' . esc_attr($option) . '" ' . selected($field_value, $option, false) . '>' . esc_html($option) . '</option>';
+                            }
+                        }
+                        echo '</select>';
+                        break;
+                    case 'checkbox':
+                        echo '<input type="checkbox" id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" value="1" ' . checked($field_value, '1', false) . ' />';
+                        echo '<label for="dz_custom_field_' . esc_attr($field['name']) . '">' . esc_html($field['description']) . '</label>';
+                        break;
+                    case 'date':
+                        echo '<input type="date" id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" value="' . esc_attr($field_value) . '" style="width: 100%;" />';
+                        break;
+                    case 'time':
+                        echo '<input type="time" id="dz_custom_field_' . esc_attr($field['name']) . '" name="dz_custom_fields[' . esc_attr($field['name']) . ']" value="' . esc_attr($field_value) . '" style="width: 100%;" />';
+                        break;
+                }
+                
+                if (!empty($field['description']) && $field['type'] !== 'checkbox') {
+                    echo '<p class="description">' . esc_html($field['description']) . '</p>';
+                }
+                
+                echo '</div>';
+            }
+        }
+        
+        echo '</div>';
+    }
+    
+    public function save_custom_fields($post_id) {
+        if (!isset($_POST['dz_events_custom_fields_nonce'])) {
+            return;
+        }
+        
+        if (!wp_verify_nonce($_POST['dz_events_custom_fields_nonce'], 'dz_events_custom_fields')) {
+            return;
+        }
+        
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+        
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+        
+        if (isset($_POST['dz_custom_fields'])) {
+            $custom_fields = $_POST['dz_custom_fields'];
+            $sanitized_fields = array();
+            
+            foreach ($custom_fields as $key => $value) {
+                $sanitized_fields[sanitize_key($key)] = sanitize_text_field($value);
+            }
+            
+            update_post_meta($post_id, '_dz_events_custom_fields', $sanitized_fields);
+        }
+    }
+    
+    public function add_custom_fields_admin_menu() {
+        add_submenu_page(
+            'edit.php?post_type=dz_event',
+            __('Custom Fields', 'designzeen-events'),
+            __('Custom Fields', 'designzeen-events'),
+            'manage_options',
+            'dz-events-custom-fields',
+            array($this, 'custom_fields_admin_page')
+        );
+    }
+    
+    public function register_custom_fields_settings() {
+        register_setting('dz_events_custom_fields_settings', 'dz_events_custom_fields');
+    }
+    
+    public function custom_fields_admin_page() {
+        if (isset($_POST['add_custom_field'])) {
+            $this->add_custom_field();
+        }
+        
+        if (isset($_POST['delete_custom_field'])) {
+            $this->delete_custom_field();
+        }
+        
+        $custom_fields = get_option('dz_events_custom_fields', array());
+        ?>
+        <div class="wrap">
+            <h1><?php _e('Custom Fields', 'designzeen-events'); ?></h1>
+            
+            <div class="card" style="max-width: 800px;">
+                <h2><?php _e('Add New Custom Field', 'designzeen-events'); ?></h2>
+                <form method="post" action="">
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row"><?php _e('Field Name', 'designzeen-events'); ?></th>
+                            <td>
+                                <input type="text" name="field_name" required style="width: 100%;" />
+                                <p class="description"><?php _e('Internal field name (lowercase, no spaces)', 'designzeen-events'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php _e('Field Label', 'designzeen-events'); ?></th>
+                            <td>
+                                <input type="text" name="field_label" required style="width: 100%;" />
+                                <p class="description"><?php _e('Display label for the field', 'designzeen-events'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php _e('Field Type', 'designzeen-events'); ?></th>
+                            <td>
+                                <select name="field_type" style="width: 100%;">
+                                    <option value="text"><?php _e('Text', 'designzeen-events'); ?></option>
+                                    <option value="textarea"><?php _e('Textarea', 'designzeen-events'); ?></option>
+                                    <option value="number"><?php _e('Number', 'designzeen-events'); ?></option>
+                                    <option value="email"><?php _e('Email', 'designzeen-events'); ?></option>
+                                    <option value="url"><?php _e('URL', 'designzeen-events'); ?></option>
+                                    <option value="select"><?php _e('Select Dropdown', 'designzeen-events'); ?></option>
+                                    <option value="checkbox"><?php _e('Checkbox', 'designzeen-events'); ?></option>
+                                    <option value="date"><?php _e('Date', 'designzeen-events'); ?></option>
+                                    <option value="time"><?php _e('Time', 'designzeen-events'); ?></option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php _e('Options', 'designzeen-events'); ?></th>
+                            <td>
+                                <textarea name="field_options" rows="3" style="width: 100%;"></textarea>
+                                <p class="description"><?php _e('For select fields, enter one option per line', 'designzeen-events'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php _e('Description', 'designzeen-events'); ?></th>
+                            <td>
+                                <textarea name="field_description" rows="2" style="width: 100%;"></textarea>
+                                <p class="description"><?php _e('Help text for the field', 'designzeen-events'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php _e('Required', 'designzeen-events'); ?></th>
+                            <td>
+                                <input type="checkbox" name="field_required" value="1" />
+                                <label><?php _e('Make this field required', 'designzeen-events'); ?></label>
+                            </td>
+                        </tr>
+                    </table>
+                    <?php submit_button(__('Add Custom Field', 'designzeen-events'), 'primary', 'add_custom_field'); ?>
+                </form>
+            </div>
+            
+            <div class="card" style="max-width: 800px; margin-top: 20px;">
+                <h2><?php _e('Existing Custom Fields', 'designzeen-events'); ?></h2>
+                <?php if (empty($custom_fields)): ?>
+                    <p><?php _e('No custom fields defined yet.', 'designzeen-events'); ?></p>
+                <?php else: ?>
+                    <table class="wp-list-table widefat fixed striped">
+                        <thead>
+                            <tr>
+                                <th><?php _e('Field Name', 'designzeen-events'); ?></th>
+                                <th><?php _e('Label', 'designzeen-events'); ?></th>
+                                <th><?php _e('Type', 'designzeen-events'); ?></th>
+                                <th><?php _e('Required', 'designzeen-events'); ?></th>
+                                <th><?php _e('Actions', 'designzeen-events'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($custom_fields as $index => $field): ?>
+                                <tr>
+                                    <td><code><?php echo esc_html($field['name']); ?></code></td>
+                                    <td><?php echo esc_html($field['label']); ?></td>
+                                    <td><?php echo esc_html(ucfirst($field['type'])); ?></td>
+                                    <td><?php echo $field['required'] ? __('Yes', 'designzeen-events') : __('No', 'designzeen-events'); ?></td>
+                                    <td>
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="field_index" value="<?php echo $index; ?>" />
+                                            <input type="submit" name="delete_custom_field" value="<?php _e('Delete', 'designzeen-events'); ?>" class="button button-small" onclick="return confirm('<?php _e('Are you sure you want to delete this custom field?', 'designzeen-events'); ?>');" />
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php
+    }
+    
+    private function add_custom_field() {
+        $custom_fields = get_option('dz_events_custom_fields', array());
+        
+        $field = array(
+            'name' => sanitize_key($_POST['field_name']),
+            'label' => sanitize_text_field($_POST['field_label']),
+            'type' => sanitize_text_field($_POST['field_type']),
+            'options' => sanitize_textarea_field($_POST['field_options']),
+            'description' => sanitize_textarea_field($_POST['field_description']),
+            'required' => isset($_POST['field_required']) ? 1 : 0
+        );
+        
+        $custom_fields[] = $field;
+        update_option('dz_events_custom_fields', $custom_fields);
+        
+        echo '<div class="notice notice-success"><p>' . __('Custom field added successfully!', 'designzeen-events') . '</p></div>';
+    }
+    
+    private function delete_custom_field() {
+        $custom_fields = get_option('dz_events_custom_fields', array());
+        $index = intval($_POST['field_index']);
+        
+        if (isset($custom_fields[$index])) {
+            unset($custom_fields[$index]);
+            $custom_fields = array_values($custom_fields); // Re-index array
+            update_option('dz_events_custom_fields', $custom_fields);
+            echo '<div class="notice notice-success"><p>' . __('Custom field deleted successfully!', 'designzeen-events') . '</p></div>';
+        }
+    }
+}
+
+// Initialize Custom Fields
+DZ_Events_Custom_Fields::get_instance();
+
+// Elementor Integration
+class DZ_Events_Elementor {
+    
+    private static $instance = null;
+    
+    public static function get_instance() {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    private function __construct() {
+        add_action('elementor/widgets/widgets_registered', array($this, 'register_elementor_widgets'));
+        add_action('elementor/elements/categories_registered', array($this, 'add_elementor_category'));
+        add_action('elementor/init', array($this, 'init_elementor_support'));
+    }
+    
+    public function init_elementor_support() {
+        // Add Elementor support for events post type
+        add_post_type_support('dz_event', 'elementor');
+    }
+    
+    public function add_elementor_category($elements_manager) {
+        $elements_manager->add_category(
+            'dz-events',
+            array(
+                'title' => __('Zeen Events', 'designzeen-events'),
+                'icon' => 'fa fa-calendar',
+            )
+        );
+    }
+    
+    public function register_elementor_widgets() {
+        if (!class_exists('Elementor\Widget_Base')) {
+            return;
+        }
+        
+        // Register Events Grid Widget
+        require_once DZ_EVENTS_PLUGIN_PATH . 'includes/elementor-events-widget.php';
+        \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new DZ_Events_Elementor_Widget());
+        
+        // Register Single Event Widget
+        require_once DZ_EVENTS_PLUGIN_PATH . 'includes/elementor-single-event-widget.php';
+        \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new DZ_Single_Event_Elementor_Widget());
+    }
+}
+
+// Initialize Elementor Integration
+if (did_action('elementor/loaded')) {
+    DZ_Events_Elementor::get_instance();
+} else {
+    add_action('elementor/loaded', array('DZ_Events_Elementor', 'get_instance'));
+}
+
+// Create Elementor Widget Files
+function dz_events_create_elementor_widgets() {
+    $plugin_path = DZ_EVENTS_PLUGIN_PATH;
+    
+    // Create includes directory if it doesn't exist
+    if (!file_exists($plugin_path . 'includes')) {
+        wp_mkdir_p($plugin_path . 'includes');
+    }
+    
+    // Events Grid Widget
+    $events_widget_content = '<?php
+/**
+ * Elementor Events Grid Widget
+ */
+
+if (!defined(\'ABSPATH\')) {
+    exit;
+}
+
+class DZ_Events_Elementor_Widget extends \Elementor\Widget_Base {
+    
+    public function get_name() {
+        return \'dz_events_grid\';
+    }
+    
+    public function get_title() {
+        return __(\'Events Grid\', \'designzeen-events\');
+    }
+    
+    public function get_icon() {
+        return \'eicon-posts-grid\';
+    }
+    
+    public function get_categories() {
+        return [\'dz-events\'];
+    }
+    
+    public function get_keywords() {
+        return [\'events\', \'grid\', \'calendar\', \'zeen\'];
+    }
+    
+    protected function _register_controls() {
+        $this->start_controls_section(
+            \'content_section\',
+            [
+                \'label\' => __(\'Content\', \'designzeen-events\'),
+                \'tab\' => \Elementor\Controls_Manager::TAB_CONTENT,
+            ]
+        );
+        
+        $this->add_control(
+            \'posts_per_page\',
+            [
+                \'label\' => __(\'Number of Events\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::NUMBER,
+                \'default\' => 6,
+                \'min\' => 1,
+                \'max\' => 50,
+            ]
+        );
+        
+        $this->add_control(
+            \'columns\',
+            [
+                \'label\' => __(\'Columns\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SELECT,
+                \'default\' => \'3\',
+                \'options\' => [
+                    \'1\' => \'1 Column\',
+                    \'2\' => \'2 Columns\',
+                    \'3\' => \'3 Columns\',
+                    \'4\' => \'4 Columns\',
+                ],
+            ]
+        );
+        
+        $this->add_control(
+            \'layout\',
+            [
+                \'label\' => __(\'Layout\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SELECT,
+                \'default\' => \'grid\',
+                \'options\' => [
+                    \'grid\' => __(\'Grid\', \'designzeen-events\'),
+                    \'list\' => __(\'List\', \'designzeen-events\'),
+                ],
+            ]
+        );
+        
+        $this->add_control(
+            \'category\',
+            [
+                \'label\' => __(\'Category\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::TEXT,
+                \'placeholder\' => __(\'Category slug (optional)\', \'designzeen-events\'),
+            ]
+        );
+        
+        $this->add_control(
+            \'featured_only\',
+            [
+                \'label\' => __(\'Featured Events Only\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Yes\', \'designzeen-events\'),
+                \'label_off\' => __(\'No\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'false\',
+            ]
+        );
+        
+        $this->add_control(
+            \'upcoming_only\',
+            [
+                \'label\' => __(\'Upcoming Events Only\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Yes\', \'designzeen-events\'),
+                \'label_off\' => __(\'No\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'true\',
+            ]
+        );
+        
+        $this->end_controls_section();
+        
+        $this->start_controls_section(
+            \'display_section\',
+            [
+                \'label\' => __(\'Display Options\', \'designzeen-events\'),
+                \'tab\' => \Elementor\Controls_Manager::TAB_CONTENT,
+            ]
+        );
+        
+        $this->add_control(
+            \'show_date\',
+            [
+                \'label\' => __(\'Show Date\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Show\', \'designzeen-events\'),
+                \'label_off\' => __(\'Hide\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'true\',
+            ]
+        );
+        
+        $this->add_control(
+            \'show_time\',
+            [
+                \'label\' => __(\'Show Time\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Show\', \'designzeen-events\'),
+                \'label_off\' => __(\'Hide\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'true\',
+            ]
+        );
+        
+        $this->add_control(
+            \'show_location\',
+            [
+                \'label\' => __(\'Show Location\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Show\', \'designzeen-events\'),
+                \'label_off\' => __(\'Hide\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'true\',
+            ]
+        );
+        
+        $this->add_control(
+            \'show_price\',
+            [
+                \'label\' => __(\'Show Price\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Show\', \'designzeen-events\'),
+                \'label_off\' => __(\'Hide\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'true\',
+            ]
+        );
+        
+        $this->add_control(
+            \'show_excerpt\',
+            [
+                \'label\' => __(\'Show Excerpt\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Show\', \'designzeen-events\'),
+                \'label_off\' => __(\'Hide\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'true\',
+            ]
+        );
+        
+        $this->add_control(
+            \'button_text\',
+            [
+                \'label\' => __(\'Button Text\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::TEXT,
+                \'default\' => __(\'View Details\', \'designzeen-events\'),
+            ]
+        );
+        
+        $this->end_controls_section();
+    }
+    
+    protected function render() {
+        $settings = $this->get_settings_for_display();
+        
+        $shortcode_atts = array(
+            \'posts_per_page\' => $settings[\'posts_per_page\'],
+            \'columns\' => $settings[\'columns\'],
+            \'layout\' => $settings[\'layout\'],
+            \'category\' => $settings[\'category\'],
+            \'featured_only\' => $settings[\'featured_only\'],
+            \'upcoming_only\' => $settings[\'upcoming_only\'],
+            \'show_date\' => $settings[\'show_date\'],
+            \'show_time\' => $settings[\'show_time\'],
+            \'show_location\' => $settings[\'show_location\'],
+            \'show_price\' => $settings[\'show_price\'],
+            \'show_excerpt\' => $settings[\'show_excerpt\'],
+            \'button_text\' => $settings[\'button_text\'],
+        );
+        
+        echo do_shortcode(\'[zeen_events \' . http_build_query($shortcode_atts, \'\', \' \') . \']\');
+    }
+}';
+    
+    file_put_contents($plugin_path . 'includes/elementor-events-widget.php', $events_widget_content);
+    
+    // Single Event Widget
+    $single_widget_content = '<?php
+/**
+ * Elementor Single Event Widget
+ */
+
+if (!defined(\'ABSPATH\')) {
+    exit;
+}
+
+class DZ_Single_Event_Elementor_Widget extends \Elementor\Widget_Base {
+    
+    public function get_name() {
+        return \'dz_single_event\';
+    }
+    
+    public function get_title() {
+        return __(\'Single Event\', \'designzeen-events\');
+    }
+    
+    public function get_icon() {
+        return \'eicon-single-post\';
+    }
+    
+    public function get_categories() {
+        return [\'dz-events\'];
+    }
+    
+    public function get_keywords() {
+        return [\'event\', \'single\', \'calendar\', \'zeen\'];
+    }
+    
+    protected function _register_controls() {
+        $this->start_controls_section(
+            \'content_section\',
+            [
+                \'label\' => __(\'Content\', \'designzeen-events\'),
+                \'tab\' => \Elementor\Controls_Manager::TAB_CONTENT,
+            ]
+        );
+        
+        $this->add_control(
+            \'event_id\',
+            [
+                \'label\' => __(\'Event\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SELECT2,
+                \'options\' => $this->get_events_options(),
+                \'label_block\' => true,
+            ]
+        );
+        
+        $this->add_control(
+            \'show_image\',
+            [
+                \'label\' => __(\'Show Image\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Show\', \'designzeen-events\'),
+                \'label_off\' => __(\'Hide\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'true\',
+            ]
+        );
+        
+        $this->add_control(
+            \'show_content\',
+            [
+                \'label\' => __(\'Show Content\', \'designzeen-events\'),
+                \'type\' => \Elementor\Controls_Manager::SWITCHER,
+                \'label_on\' => __(\'Show\', \'designzeen-events\'),
+                \'label_off\' => __(\'Hide\', \'designzeen-events\'),
+                \'return_value\' => \'true\',
+                \'default\' => \'true\',
+            ]
+        );
+        
+        $this->end_controls_section();
+    }
+    
+    private function get_events_options() {
+        $events = get_posts(array(
+            \'post_type\' => \'dz_event\',
+            \'posts_per_page\' => -1,
+            \'post_status\' => \'publish\',
+        ));
+        
+        $options = array();
+        foreach ($events as $event) {
+            $options[$event->ID] = $event->post_title;
+        }
+        
+        return $options;
+    }
+    
+    protected function render() {
+        $settings = $this->get_settings_for_display();
+        
+        if (empty($settings[\'event_id\'])) {
+            echo \'<p>\' . __(\'Please select an event.\', \'designzeen-events\') . \'</p>\';
+            return;
+        }
+        
+        $event_id = $settings[\'event_id\'];
+        $event = get_post($event_id);
+        
+        if (!$event || $event->post_type !== \'dz_event\') {
+            echo \'<p>\' . __(\'Event not found.\', \'designzeen-events\') . \'</p>\';
+            return;
+        }
+        
+        echo \'<div class="dz-single-event-elementor">\';
+        
+        if ($settings[\'show_image\'] === \'true\' && has_post_thumbnail($event_id)) {
+            echo \'<div class="dz-event-image">\';
+            echo get_the_post_thumbnail($event_id, \'large\');
+            echo \'</div>\';
+        }
+        
+        echo \'<div class="dz-event-content">\';
+        echo \'<h2 class="dz-event-title">\' . get_the_title($event_id) . \'</h2>\';
+        
+        // Event meta
+        $start_date = get_post_meta($event_id, \'_dz_event_start\', true);
+        $location = get_post_meta($event_id, \'_dz_event_location\', true);
+        $price = get_post_meta($event_id, \'_dz_event_price\', true);
+        
+        echo \'<div class="dz-event-meta">\';
+        if ($start_date) {
+            echo \'<div class="dz-meta-item">📅 \' . date(\'M j, Y\', strtotime($start_date)) . \'</div>\';
+        }
+        if ($location) {
+            echo \'<div class="dz-meta-item">📍 \' . esc_html($location) . \'</div>\';
+        }
+        if ($price) {
+            echo \'<div class="dz-meta-item">💰 \' . esc_html($price) . \'</div>\';
+        }
+        echo \'</div>\';
+        
+        if ($settings[\'show_content\'] === \'true\') {
+            echo \'<div class="dz-event-description">\' . apply_filters(\'the_content\', $event->post_content) . \'</div>\';
+        }
+        
+        echo \'<div class="dz-event-actions">\';
+        echo \'<a href="\' . get_permalink($event_id) . \'" class="dz-btn dz-btn-primary">\' . __(\'View Full Details\', \'designzeen-events\') . \'</a>\';
+        echo \'</div>\';
+        
+        echo \'</div></div>\';
+    }
+}';
+    
+    file_put_contents($plugin_path . 'includes/elementor-single-event-widget.php', $single_widget_content);
+}
+
+// Create Elementor widget files on plugin activation
+register_activation_hook(__FILE__, 'dz_events_create_elementor_widgets');

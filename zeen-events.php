@@ -90,32 +90,32 @@ if ( ! dz_events_check_requirements() ) {
     return;
 }
 
-// Core Architecture - Load first
-require_once plugin_dir_path(__FILE__) . 'includes/class-core.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-database-manager.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-rest-api.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-performance-optimizer.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-security-manager.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-analytics-engine.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-admin-dashboard.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-registration-system.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-payment-gateways.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-multisite-support.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-advanced-management.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-form-integration.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-template-customizer.php';
-
-// Includes
+// Essential includes only - Load core functionality first
 require_once plugin_dir_path(__FILE__) . 'includes/post-types.php';
 require_once plugin_dir_path(__FILE__) . 'includes/meta-boxes.php';
 require_once plugin_dir_path(__FILE__) . 'includes/card-settings.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-shortcode-handler.php'; // Simplified shortcode handler
-require_once plugin_dir_path(__FILE__) . 'includes/blocks.php';
 require_once plugin_dir_path(__FILE__) . 'includes/enqueue.php';
 require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
 require_once plugin_dir_path(__FILE__) . 'includes/single-event.php';
-require_once plugin_dir_path(__FILE__) . 'includes/elementor.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-elementor-widgets-advanced.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-elementor-widgets-unique.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-setup-wizard.php';
+require_once plugin_dir_path(__FILE__) . 'includes/blocks.php';
 require_once plugin_dir_path(__FILE__) . 'includes/custom-fields.php';
+
+// Load advanced features only if needed (commented out to prevent errors)
+// require_once plugin_dir_path(__FILE__) . 'includes/class-core.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-database-manager.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-rest-api.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-performance-optimizer.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-security-manager.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-analytics-engine.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-admin-dashboard.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-registration-system.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-payment-gateways.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-multisite-support.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-advanced-management.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-form-integration.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-template-customizer.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-shortcode-handler.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/elementor.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-elementor-widgets-advanced.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-elementor-widgets-unique.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-setup-wizard.php';
